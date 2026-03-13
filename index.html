@@ -215,7 +215,7 @@
     .btn-ghost:hover:not(:disabled) { border-color: #94a3b8; color: var(--text); background: #f1f5f9; }
     .btn-sm { padding: 7px 12px; font-size: 12px; }
 
-    .toolbar { display: grid; grid-template-columns: 1fr 160px 190px auto auto; gap: 9px; margin-bottom: 14px; align-items: end; }
+    .toolbar { display: grid; grid-template-columns: 1fr 160px 190px auto auto auto; gap: 9px; margin-bottom: 14px; align-items: end; }
     .tb-group { display: flex; flex-direction: column; gap: 4px; }
     .tb-label { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: .3px; text-transform: uppercase; }
     .search-wrap { position: relative; }
@@ -388,6 +388,296 @@
     .spinner { width: 26px; height: 26px; border: 3px solid #e2e8f0; border-top-color: var(--primary); border-radius: 50%; animation: spin .75s linear infinite; margin: 0 auto 8px; }
     .loading-td { text-align: center; padding: 36px; color: var(--muted); font-size: 13px; }
 
+    .share-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(13,27,46,.55);
+      display: none;
+      z-index: 12000;
+      padding: 24px;
+      overflow: auto;
+    }
+
+    .share-overlay.show {
+      display: block;
+    }
+
+    .share-shell {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 24px 60px rgba(13,27,46,.22);
+      overflow: hidden;
+    }
+
+    .share-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+      background: #f8fbff;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    .share-topbar-left h2 {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .share-topbar-left p {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    .share-topbar-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .share-content {
+      padding: 22px;
+      background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+    }
+
+    .report-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .report-title h1 {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.15;
+    }
+
+    .report-title p {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .report-meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(160px, 1fr));
+      gap: 10px;
+      width: min(420px, 100%);
+    }
+
+    .report-meta-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .report-meta-card small {
+      display: block;
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: .7px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .report-meta-card strong {
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .report-chip-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .report-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #eef4ff;
+      color: #1a56db;
+      border: 1px solid #dbe8ff;
+    }
+
+    .report-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .report-stat {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .report-stat small {
+      display: block;
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: .7px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .report-stat strong {
+      font-size: 28px;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      line-height: 1;
+    }
+
+    .report-stat.blue strong { color: #1a56db; }
+    .report-stat.sky strong { color: #0284c7; }
+    .report-stat.amber strong { color: #d97706; }
+    .report-stat.green strong { color: #16a34a; }
+
+    .report-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .report-ticket {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .report-ticket-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .report-ticket-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .report-ticket-date {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .report-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    .report-info {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .report-info-box {
+      background: #f8fafc;
+      border: 1px solid #edf2f7;
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    .report-info-box small {
+      display: block;
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .report-info-box div {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    .report-desc {
+      border: 1px solid #edf2f7;
+      border-radius: 12px;
+      background: #fcfdff;
+      padding: 12px 13px;
+      margin-bottom: 10px;
+    }
+
+    .report-desc:last-child {
+      margin-bottom: 0;
+    }
+
+    .report-desc h4 {
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: .7px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .report-desc p {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .report-empty {
+      padding: 60px 20px;
+      text-align: center;
+      background: #fff;
+      border: 1px dashed #cbd5e1;
+      border-radius: 18px;
+    }
+
+    .report-empty h3 {
+      font-size: 18px;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+
+    .report-empty p {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
     body.sidebar-collapsed .sidebar {
       width: 84px;
       min-width: 84px;
@@ -427,6 +717,8 @@
     @media (max-width: 1100px) {
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
       .charts-grid { grid-template-columns: 1fr; }
+      .report-stats { grid-template-columns: repeat(2, 1fr); }
+      .report-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 860px) {
@@ -485,6 +777,9 @@
       .form-grid { grid-template-columns: repeat(2, 1fr); }
       .toolbar { grid-template-columns: 1fr 1fr; }
       .toolbar .search-block { grid-column: 1/-1; }
+      .share-overlay { padding: 12px; }
+      .share-content { padding: 16px; }
+      .share-topbar { padding: 14px 16px; }
     }
 
     @media (max-width: 560px) {
@@ -494,6 +789,57 @@
       .detail-grid { grid-template-columns: 1fr; }
       .page-header { flex-direction: column; align-items: stretch; }
       .header-actions { width: 100%; }
+      .report-meta { grid-template-columns: 1fr; }
+      .report-stats { grid-template-columns: 1fr; }
+      .report-info { grid-template-columns: 1fr; }
+      .share-topbar { flex-direction: column; align-items: stretch; }
+      .share-topbar-actions { width: 100%; }
+    }
+
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+
+      #shareOverlay,
+      #shareOverlay * {
+        visibility: visible !important;
+      }
+
+      #shareOverlay {
+        display: block !important;
+        position: static !important;
+        inset: auto !important;
+        padding: 0 !important;
+        background: #fff !important;
+        overflow: visible !important;
+      }
+
+      .share-shell {
+        width: 100% !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        overflow: visible !important;
+      }
+
+      .share-topbar-actions {
+        display: none !important;
+      }
+
+      .share-topbar {
+        position: static !important;
+        background: #fff !important;
+      }
+
+      .report-grid {
+        grid-template-columns: 1fr 1fr !important;
+      }
+
+      .report-ticket {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
     }
   </style>
 </head>
@@ -642,6 +988,22 @@
             <div class="tb-group">
               <div class="tb-label" style="opacity:0">x</div>
               <button class="btn btn-secondary btn-sm" onclick="resetFilters()">Reset</button>
+            </div>
+
+            <div class="tb-group">
+              <div class="tb-label" style="opacity:0">x</div>
+              <button class="btn btn-ghost btn-sm" onclick="copyActiveSummary()">
+                <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copy Summary
+              </button>
+            </div>
+
+            <div class="tb-group">
+              <div class="tb-label" style="opacity:0">x</div>
+              <button class="btn btn-primary btn-sm" onclick="openShareView()">
+                <svg viewBox="0 0 24 24"><path d="M15 8a3 3 0 1 0-2.83-4H12a3 3 0 0 0 .17 1L7.91 7.13a3 3 0 0 0-1.91-.68 3 3 0 1 0 1.91 5.32l4.26 2.13A3 3 0 0 0 12 15a3 3 0 1 0 3-3c-.67 0-1.29.22-1.79.59l-4.32-2.16A3 3 0 0 0 9 9c0-.32-.05-.62-.14-.91l4.3-2.15A3 3 0 0 0 15 8z"/></svg>
+                Share View
+              </button>
             </div>
           </div>
 
@@ -802,6 +1164,32 @@
   </div>
 </div>
 
+<div class="share-overlay" id="shareOverlay">
+  <div class="share-shell">
+    <div class="share-topbar">
+      <div class="share-topbar-left">
+        <h2>Share View Tiket</h2>
+        <p>Tampilan siap screenshot, kirim, atau print ke PDF</p>
+      </div>
+      <div class="share-topbar-actions">
+        <button class="btn btn-ghost btn-sm" onclick="copyActiveSummary()">
+          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy Summary
+        </button>
+        <button class="btn btn-success btn-sm" onclick="printShareView()">
+          <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Print / Save PDF
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="closeShareView()">
+          ✕ Tutup
+        </button>
+      </div>
+    </div>
+
+    <div class="share-content" id="shareContent"></div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -831,6 +1219,13 @@ function getTodayLocal() {
   return `${y}-${m}-${day}`;
 }
 
+function formatDateTimeNow() {
+  const d = new Date();
+  const date = `${String(d.getDate()).padStart(2, "0")}-${String(d.getMonth() + 1).padStart(2, "0")}-${d.getFullYear()}`;
+  const time = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  return `${date} ${time}`;
+}
+
 (function init() {
   document.getElementById("fTanggal").value = getTodayLocal();
   updateStatusButtonLabel();
@@ -856,6 +1251,18 @@ function getSelectedStatuses() {
   return statusChecks()
     .filter(ch => ch.checked)
     .map(ch => ch.value);
+}
+
+function getFilteredTickets() {
+  const q = searchEl.value.toLowerCase();
+  const fs = fSistemEl.value;
+  const selectedStatuses = getSelectedStatuses();
+
+  return tickets.filter(t =>
+    (!q || [t.notiket, t.keluhan, t.pic].some(v => (v || "").toLowerCase().includes(q))) &&
+    (!fs || t.sistem === fs) &&
+    (!selectedStatuses.length || selectedStatuses.includes(t.status))
+  );
 }
 
 function updateStatusButtonLabel() {
@@ -931,6 +1338,15 @@ function fmtDate(s) {
   return s || "-";
 }
 
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 const bPriority = v => ({
   High:   `<span class="badge p-high"><span class="bdot"></span>High</span>`,
   Medium: `<span class="badge p-med"><span class="bdot"></span>Medium</span>`,
@@ -976,15 +1392,7 @@ function updateStats() {
 }
 
 function render() {
-  const q = searchEl.value.toLowerCase();
-  const fs = fSistemEl.value;
-  const selectedStatuses = getSelectedStatuses();
-
-  const filtered = tickets.filter(t =>
-    (!q || [t.notiket, t.keluhan, t.pic].some(v => (v || "").toLowerCase().includes(q))) &&
-    (!fs || t.sistem === fs) &&
-    (!selectedStatuses.length || selectedStatuses.includes(t.status))
-  );
+  const filtered = getFilteredTickets();
 
   if (!filtered.length) {
     tableBody.innerHTML = `<tr><td colspan="9"><div class="empty">
@@ -1001,9 +1409,9 @@ function render() {
         <td style="color:var(--muted);font-size:12px">${i + 1}</td>
         <td class="date-cell">${fmtDate(t.tanggal)}</td>
         <td><span class="notiket-cell">${t.notiket || "-"}</span></td>
-        <td class="keluhan-cell" title="${(t.keluhan || "").replace(/"/g, "&quot;")}">${klhn}</td>
+        <td class="keluhan-cell" title="${escapeHtml(t.keluhan || "")}">${escapeHtml(klhn)}</td>
         <td>${bSistem(t.sistem)}</td>
-        <td>${t.pic || "-"}</td>
+        <td>${escapeHtml(t.pic || "-")}</td>
         <td>${bPriority(t.priority)}</td>
         <td>${bStatus(t.status)}</td>
         <td>
@@ -1024,6 +1432,163 @@ function render() {
   }
 
   updateStats();
+}
+
+function buildShareReportHtml(filtered) {
+  const selectedStatuses = getSelectedStatuses();
+  const selectedSystem = fSistemEl.value;
+  const searchValue = searchEl.value.trim();
+
+  const countChecking = filtered.filter(t => t.status === "On Checking").length;
+  const countProcess = filtered.filter(t => t.status === "On Process").length;
+  const countDone = filtered.filter(t => t.status === "DONE").length;
+
+  const chips = [];
+  chips.push(`<span class="report-chip">Generated: ${escapeHtml(formatDateTimeNow())}</span>`);
+  chips.push(`<span class="report-chip">Total ditampilkan: ${filtered.length} tiket</span>`);
+  chips.push(`<span class="report-chip">Sistem: ${escapeHtml(selectedSystem || "Semua")}</span>`);
+  chips.push(`<span class="report-chip">Status: ${escapeHtml(selectedStatuses.length ? selectedStatuses.join(", ") : "Semua")}</span>`);
+  if (searchValue) chips.push(`<span class="report-chip">Cari: ${escapeHtml(searchValue)}</span>`);
+
+  const cards = filtered.length
+    ? filtered.map(t => `
+      <div class="report-ticket">
+        <div class="report-ticket-top">
+          <div>
+            <div class="report-ticket-code">${escapeHtml(t.notiket || "-")}</div>
+            <div class="report-ticket-date">Tanggal: ${escapeHtml(fmtDate(t.tanggal))}</div>
+          </div>
+          <div class="report-badges">
+            ${bStatus(t.status)}
+            ${bPriority(t.priority)}
+            ${bSistem(t.sistem)}
+          </div>
+        </div>
+
+        <div class="report-info">
+          <div class="report-info-box">
+            <small>PIC</small>
+            <div>${escapeHtml(t.pic || "-")}</div>
+          </div>
+          <div class="report-info-box">
+            <small>Status Kerja</small>
+            <div>${escapeHtml(t.status || "-")}</div>
+          </div>
+        </div>
+
+        <div class="report-desc">
+          <h4>Keluhan / Penjelasan</h4>
+          <p>${escapeHtml(t.keluhan || "-")}</p>
+        </div>
+
+        ${(t.penyelesaian || "").trim() ? `
+          <div class="report-desc">
+            <h4>Penyelesaian</h4>
+            <p>${escapeHtml(t.penyelesaian)}</p>
+          </div>
+        ` : ""}
+      </div>
+    `).join("")
+    : `
+      <div class="report-empty">
+        <h3>Tidak ada tiket pada filter ini</h3>
+        <p>Ubah filter lalu generate kembali share view.</p>
+      </div>
+    `;
+
+  return `
+    <div class="report-header">
+      <div class="report-title">
+        <h1>Laporan Tiket Aktif / Filter</h1>
+        <p>Tampilan ini dibuat khusus untuk screenshot, kirim ke chat, atau print PDF.</p>
+      </div>
+
+      <div class="report-meta">
+        <div class="report-meta-card">
+          <small>Tanggal Cetak</small>
+          <strong>${escapeHtml(formatDateTimeNow())}</strong>
+        </div>
+        <div class="report-meta-card">
+          <small>Total Tiket</small>
+          <strong>${filtered.length}</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="report-chip-wrap">
+      ${chips.join("")}
+    </div>
+
+    <div class="report-stats">
+      <div class="report-stat blue">
+        <small>Total Ditampilkan</small>
+        <strong>${filtered.length}</strong>
+      </div>
+      <div class="report-stat sky">
+        <small>On Checking</small>
+        <strong>${countChecking}</strong>
+      </div>
+      <div class="report-stat amber">
+        <small>On Process</small>
+        <strong>${countProcess}</strong>
+      </div>
+      <div class="report-stat green">
+        <small>DONE</small>
+        <strong>${countDone}</strong>
+      </div>
+    </div>
+
+    <div class="report-grid">
+      ${cards}
+    </div>
+  `;
+}
+
+function openShareView() {
+  const filtered = getFilteredTickets();
+  document.getElementById("shareContent").innerHTML = buildShareReportHtml(filtered);
+  document.getElementById("shareOverlay").classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+
+function closeShareView() {
+  document.getElementById("shareOverlay").classList.remove("show");
+  document.body.style.overflow = "";
+}
+
+function printShareView() {
+  const isOpen = document.getElementById("shareOverlay").classList.contains("show");
+  if (!isOpen) openShareView();
+  window.print();
+}
+
+async function copyActiveSummary() {
+  const filtered = getFilteredTickets();
+  const selectedStatuses = getSelectedStatuses();
+  const selectedSystem = fSistemEl.value || "Semua";
+  const searchValue = searchEl.value.trim();
+
+  let summary = `Laporan Tiket\n`;
+  summary += `Tanggal: ${formatDateTimeNow()}\n`;
+  summary += `Sistem: ${selectedSystem}\n`;
+  summary += `Status: ${selectedStatuses.length ? selectedStatuses.join(", ") : "Semua"}\n`;
+  if (searchValue) summary += `Cari: ${searchValue}\n`;
+  summary += `Total: ${filtered.length} tiket\n\n`;
+
+  if (!filtered.length) {
+    summary += `Tidak ada tiket pada filter ini.`;
+  } else {
+    summary += filtered.map((t, i) => {
+      return `${i + 1}. ${t.notiket || "-"} | ${t.status || "-"} | ${t.sistem || "-"} | ${t.pic || "-"} | ${t.keluhan || "-"}`;
+    }).join("\n");
+  }
+
+  try {
+    await navigator.clipboard.writeText(summary);
+    showToast("Summary berhasil dicopy", "success");
+  } catch {
+    showToast("Gagal copy summary", "error");
+  }
 }
 
 async function callScript(payload) {
@@ -1356,10 +1921,15 @@ document.getElementById("detailModal").addEventListener("click", e => {
   if (e.target === e.currentTarget) closeModal();
 });
 
+document.getElementById("shareOverlay").addEventListener("click", e => {
+  if (e.target === e.currentTarget) closeShareView();
+});
+
 document.addEventListener("keydown", e => {
   if (e.key === "Escape") {
     closeModal();
     closeStatusDropdown();
+    closeShareView();
   }
 });
 
