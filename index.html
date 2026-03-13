@@ -227,6 +227,12 @@ button:hover{
 transform:translateY(-1px);
 }
 
+button:disabled{
+opacity:.65;
+cursor:not-allowed;
+transform:none;
+}
+
 .btn-primary{background:var(--primary);color:#fff}
 .btn-primary:hover{background:var(--primary-dark)}
 .btn-secondary{background:#e2e8f0;color:#0f172a}
@@ -511,6 +517,7 @@ transform:translateY(0);
 .toast-edit{background:#2563eb;}
 .toast-delete{background:#dc2626;}
 .toast-info{background:#475569;}
+.toast-error{background:#b91c1c;}
 
 @media (max-width: 768px){
 .detail-grid{
@@ -801,10 +808,12 @@ min-height:78px;
 <div id="toast"></div>
 
 <script>
-const STORAGE_KEY = "tickets";
-let tickets = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+const API_URL = "https://script.google.com/macros/s/AKfycbzM9GoMsY5etdz70UKbg3N3b-VCnKPyQfjKw21e74LvvbDzcqOMBa3u3DA0hW0OXR6QSA/exec";
+
+let tickets = [];
 let editIndex = -1;
 let toastTimer = null;
+let isSubmitting = false;
 
 const ticketForm = document.getElementById("ticketForm");
 const submitBtn = document.getElementById("submitBtn");
@@ -823,10 +832,6 @@ const picEl = document.getElementById("pic");
 const priorityEl = document.getElementById("priority");
 const statusEl = document.getElementById("status");
 
-function save() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(tickets));
-}
-
 function showToast(message, type = "success") {
   if (toastTimer) clearTimeout(toastTimer);
 
@@ -837,6 +842,7 @@ function showToast(message, type = "success") {
   if (type === "edit") toastEl.classList.add("toast-edit");
   if (type === "delete") toastEl.classList.add("toast-delete");
   if (type === "info") toastEl.classList.add("toast-info");
+  if (type === "error") toastEl.classList.add("toast-error");
 
   toastEl.classList.add("show");
 
@@ -845,10 +851,17 @@ function showToast(message, type = "success") {
   }, 3000);
 }
 
+function setSubmitLoading(loading, label = "Simpan Tiket") {
+  isSubmitting = loading;
+  submitBtn.disabled = loading;
+  submitBtn.textContent = loading ? "Menyimpan..." : label;
+}
+
 function resetForm() {
   ticketForm.reset();
   editIndex = -1;
-  submitBtn.innerText = "Simpan Tiket";
+  submitBtn.textContent = "Simpan Tiket";
+  submitBtn.disabled = false;
 }
 
 function resetFilters() {
@@ -861,7 +874,7 @@ function resetFilters() {
 
 function formatDate(dateStr) {
   if (!dateStr) return "-";
-  const parts = dateStr.split("-");
+  const parts = String(dateStr).split("-");
   if (parts.length !== 3) return dateStr;
   return `${parts[2]}-${parts[1]}-${parts[0]}`;
 }
@@ -883,6 +896,20 @@ function badgeSistem(sistem) {
   return '<span class="badge system-nd6">ND6</span>';
 }
 
+function normalizeTicket(item) {
+  return {
+    ID: item.ID ? String(item.ID) : "",
+    tanggal: item.Tanggal ? String(item.Tanggal) : "",
+    notiket: item.NoTiket ? String(item.NoTiket) : "",
+    keluhan: item.Keluhan ? String(item.Keluhan) : "",
+    sistem: item.Sistem ? String(item.Sistem) : "ND6",
+    penyelesaian: item.Penyelesaian ? String(item.Penyelesaian) : "",
+    pic: item.PIC ? String(item.PIC) : "",
+    priority: item.Priority ? String(item.Priority) : "Low",
+    status: item.Status ? String(item.Status) : "On Checking"
+  };
+}
+
 function updateStats() {
   document.getElementById("totalTiket").innerText = tickets.length;
   document.getElementById("checking").innerText = tickets.filter(t => t.status === "On Checking").length;
@@ -890,7 +917,7 @@ function updateStats() {
   document.getElementById("done").innerText = tickets.filter(t => t.status === "DONE").length;
 }
 
-function render() {
+function render(message = "") {
   const search = searchInput.value.toLowerCase();
   const filterSistem = filterSistemEl.value;
   const filterStatus = filterStatusEl.value;
@@ -910,7 +937,7 @@ function render() {
   tableData.innerHTML = "";
 
   if (filtered.length === 0) {
-    tableData.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#64748b;padding:20px;">Belum ada data tiket</td></tr>';
+    tableData.innerHTML = `<tr><td colspan="10" style="text-align:center;color:#64748b;padding:20px;">${message || "Belum ada data tiket"}</td></tr>`;
   } else {
     filtered.forEach((t, i) => {
       const index = tickets.indexOf(t);
@@ -956,36 +983,87 @@ function render() {
   updateStats();
 }
 
-function handleSubmit(e) {
+async function loadTickets() {
+  try {
+    tableData.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#64748b;padding:20px;">Memuat data...</td></tr>';
+    const res = await fetch(`${API_URL}?t=${Date.now()}`);
+    if (!res.ok) throw new Error("Gagal mengambil data");
+    const data = await res.json();
+    tickets = Array.isArray(data) ? data.map(normalizeTicket) : [];
+    render();
+  } catch (error) {
+    console.error(error);
+    tickets = [];
+    render("Gagal memuat data dari Google Sheet");
+    showToast("Gagal memuat data", "error");
+  }
+}
+
+async function requestApi(payload) {
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) {
+    throw new Error("Request gagal");
+  }
+
+  return await res.json();
+}
+
+async function handleSubmit(e) {
   e.preventDefault();
+  if (isSubmitting) return;
 
   const data = {
-    tanggal: tanggalEl.value,
-    notiket: noTiketEl.value.trim(),
-    keluhan: keluhanEl.value.trim(),
-    sistem: sistemEl.value,
-    penyelesaian: penyelesaianEl.value.trim(),
-    pic: picEl.value.trim(),
-    priority: priorityEl.value,
-    status: statusEl.value
+    Tanggal: tanggalEl.value,
+    NoTiket: noTiketEl.value.trim(),
+    Keluhan: keluhanEl.value.trim(),
+    Sistem: sistemEl.value,
+    Penyelesaian: penyelesaianEl.value.trim(),
+    PIC: picEl.value.trim(),
+    Priority: priorityEl.value,
+    Status: statusEl.value
   };
 
-  if (!data.tanggal || !data.notiket || !data.keluhan || !data.pic) {
+  if (!data.Tanggal || !data.NoTiket || !data.Keluhan || !data.PIC) {
     alert("Mohon lengkapi data wajib terlebih dahulu.");
     return;
   }
 
-  if (editIndex === -1) {
-    tickets.unshift(data);
-    showToast("Tiket berhasil disimpan", "success");
-  } else {
-    tickets[editIndex] = data;
-    showToast("Tiket berhasil diupdate", "edit");
-  }
+  try {
+    setSubmitLoading(true);
 
-  save();
-  render();
-  resetForm();
+    let result;
+    if (editIndex === -1) {
+      result = await requestApi({
+        action: "create",
+        ...data
+      });
+      if (!result.success) throw new Error(result.message || "Gagal menyimpan tiket");
+      showToast("Tiket berhasil disimpan", "success");
+    } else {
+      result = await requestApi({
+        action: "update",
+        ID: tickets[editIndex].ID,
+        ...data
+      });
+      if (!result.success) throw new Error(result.message || "Gagal update tiket");
+      showToast("Tiket berhasil diupdate", "edit");
+    }
+
+    resetForm();
+    await loadTickets();
+  } catch (error) {
+    console.error(error);
+    showToast(error.message || "Terjadi kesalahan", "error");
+  } finally {
+    setSubmitLoading(false, editIndex === -1 ? "Simpan Tiket" : "Update Tiket");
+  }
 }
 
 function edit(i) {
@@ -1000,7 +1078,7 @@ function edit(i) {
   statusEl.value = t.status || "On Checking";
 
   editIndex = i;
-  submitBtn.innerText = "Update Tiket";
+  submitBtn.textContent = "Update Tiket";
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -1021,13 +1099,29 @@ function closeDetail() {
   document.getElementById("detailModal").classList.remove("show");
 }
 
-function del(i) {
+async function del(i) {
+  const ticket = tickets[i];
+  if (!ticket || !ticket.ID) {
+    showToast("ID tiket tidak ditemukan", "error");
+    return;
+  }
+
   if (confirm("Hapus tiket?")) {
-    tickets.splice(i, 1);
-    save();
-    render();
-    if (editIndex === i) resetForm();
-    showToast("Tiket berhasil dihapus", "delete");
+    try {
+      const result = await requestApi({
+        action: "delete",
+        ID: ticket.ID
+      });
+
+      if (!result.success) throw new Error(result.message || "Gagal hapus tiket");
+
+      if (editIndex === i) resetForm();
+      showToast("Tiket berhasil dihapus", "delete");
+      await loadTickets();
+    } catch (error) {
+      console.error(error);
+      showToast(error.message || "Gagal menghapus tiket", "error");
+    }
   }
 }
 
@@ -1049,7 +1143,7 @@ searchInput.addEventListener("input", render);
 filterSistemEl.addEventListener("change", render);
 filterStatusEl.addEventListener("change", render);
 
-render();
+loadTickets();
 </script>
 
 </body>
