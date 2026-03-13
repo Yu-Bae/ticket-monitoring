@@ -1,806 +1,715 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ticket Monitoring CRUD</title>
-
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-
-:root{
---bg:#f1f5f9;
---card:#ffffff;
---primary:#2563eb;
---primary-dark:#1d4ed8;
---border:#e2e8f0;
---text:#0f172a;
---muted:#64748b;
---danger:#ef4444;
---warning:#f59e0b;
---success:#22c55e;
---info:#3b82f6;
---radius:14px;
---shadow:0 8px 24px rgba(15,23,42,0.08);
-}
-
-html,body{
-width:100%;
-min-height:100%;
-}
-
-body{
-font-family:Arial, Helvetica, sans-serif;
-background:var(--bg);
-color:var(--text);
-line-height:1.4;
-}
-
-.container{
-width:min(96%, 1280px);
-margin:18px auto 24px;
-}
-
-.header{
-background:linear-gradient(135deg,var(--primary-dark),var(--info));
-color:#fff;
-padding:20px 24px;
-border-radius:18px;
-margin-bottom:16px;
-box-shadow:var(--shadow);
-}
-
-.header h1{
-font-size:28px;
-margin-bottom:6px;
-font-weight:700;
-}
-
-.header p{
-font-size:14px;
-opacity:0.95;
-}
-
-.cards{
-display:grid;
-grid-template-columns:repeat(4,minmax(0,1fr));
-gap:14px;
-margin-bottom:16px;
-}
-
-.card{
-background:var(--card);
-border-radius:var(--radius);
-padding:16px 18px;
-box-shadow:var(--shadow);
-border:1px solid rgba(226,232,240,0.9);
-min-height:96px;
-display:flex;
-flex-direction:column;
-justify-content:center;
-position:relative;
-overflow:hidden;
-}
-
-.card::before{
-content:"";
-position:absolute;
-left:0;
-top:0;
-bottom:0;
-width:6px;
-}
-
-.card small{
-font-size:13px;
-margin-bottom:8px;
-font-weight:700;
-}
-
-.card h2{
-font-size:30px;
-line-height:1;
-font-weight:800;
-}
-
-.card-total{
-background:linear-gradient(135deg,#eff6ff,#dbeafe);
-}
-.card-total::before{
-background:#1d4ed8;
-}
-.card-total small,
-.card-total h2{
-color:#1e3a8a;
-}
-
-.card-checking{
-background:linear-gradient(135deg,#eff6ff,#e0f2fe);
-}
-.card-checking::before{
-background:#2563eb;
-}
-.card-checking small,
-.card-checking h2{
-color:#1d4ed8;
-}
-
-.card-process{
-background:linear-gradient(135deg,#fff7ed,#fef3c7);
-}
-.card-process::before{
-background:#f59e0b;
-}
-.card-process small,
-.card-process h2{
-color:#92400e;
-}
-
-.card-done{
-background:linear-gradient(135deg,#ecfdf5,#dcfce7);
-}
-.card-done::before{
-background:#16a34a;
-}
-.card-done small,
-.card-done h2{
-color:#166534;
-}
-
-.form-card,
-.table-card{
-background:#fff;
-padding:18px 20px 20px;
-border-radius:var(--radius);
-box-shadow:var(--shadow);
-border:1px solid rgba(226,232,240,0.9);
-}
-
-.form-card{
-margin-bottom:16px;
-}
-
-.form-card h3,
-.table-card h3{
-font-size:20px;
-margin-bottom:14px;
-}
-
-.form-grid{
-display:grid;
-grid-template-columns:repeat(5,minmax(0,1fr));
-gap:12px;
-margin-top:8px;
-}
-
-.field-full{
-grid-column:1 / -1;
-}
-
-label{
-display:block;
-font-size:12px;
-font-weight:700;
-color:#334155;
-margin-bottom:6px;
-}
-
-input,select,textarea{
-width:100%;
-padding:10px 12px;
-border-radius:10px;
-border:1px solid var(--border);
-font-size:14px;
-background:#fff;
-color:var(--text);
-transition:all .2s ease;
-}
-
-input:focus,select:focus,textarea:focus{
-outline:none;
-border-color:var(--primary);
-box-shadow:0 0 0 3px rgba(37,99,235,0.14);
-}
-
-textarea{
-min-height:74px;
-resize:vertical;
-}
-
-.form-actions{
-display:flex;
-gap:10px;
-margin-top:14px;
-}
-
-button{
-padding:10px 14px;
-border:none;
-border-radius:10px;
-font-weight:700;
-font-size:13px;
-cursor:pointer;
-transition:all .2s ease;
-}
-
-button:hover{
-transform:translateY(-1px);
-}
-
-button:disabled{
-opacity:.65;
-cursor:not-allowed;
-transform:none;
-}
-
-.btn-primary{background:var(--primary);color:#fff}
-.btn-primary:hover{background:var(--primary-dark)}
-.btn-secondary{background:#e2e8f0;color:#0f172a}
-.btn-secondary:hover{background:#cbd5e1}
-
-.toolbar{
-display:grid;
-grid-template-columns:minmax(280px,1.3fr) 190px 190px 130px;
-gap:10px;
-margin-bottom:14px;
-align-items:end;
-}
-
-.toolbar-group{
-display:flex;
-flex-direction:column;
-gap:6px;
-}
-
-.toolbar-label{
-font-size:11px;
-font-weight:700;
-color:var(--muted);
-letter-spacing:.2px;
-}
-
-.search-wrap{
-position:relative;
-}
-
-.search-wrap svg{
-position:absolute;
-left:12px;
-top:50%;
-transform:translateY(-50%);
-width:16px;
-height:16px;
-stroke:#94a3b8;
-stroke-width:2;
-fill:none;
-stroke-linecap:round;
-stroke-linejoin:round;
-pointer-events:none;
-}
-
-.search-wrap input{
-padding-left:38px;
-}
-
-.btn-filter-reset{
-background:#eef2f7;
-color:#334155;
-height:42px;
-}
-.btn-filter-reset:hover{
-background:#dbe3ee;
-}
-
-.table-wrap{
-overflow:auto;
-border:1px solid var(--border);
-border-radius:12px;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-min-width:1100px;
-background:#fff;
-}
-
-th,td{
-padding:12px 10px;
-border-bottom:1px solid var(--border);
-text-align:left;
-font-size:13px;
-vertical-align:top;
-}
-
-th{
-background:#eff6ff;
-font-size:12px;
-font-weight:700;
-color:#1e3a8a;
-position:sticky;
-top:0;
-z-index:1;
-}
-
-tr:hover td{
-background:#f8fbff;
-}
-
-.date-cell{
-white-space:nowrap;
-min-width:95px;
-}
-
-.badge{
-display:inline-block;
-padding:5px 9px;
-border-radius:999px;
-font-size:11px;
-font-weight:700;
-white-space:nowrap;
-}
-
-.priority-low{background:#dcfce7;color:#166534}
-.priority-medium{background:#fef3c7;color:#92400e}
-.priority-high{background:#fee2e2;color:#991b1b}
-
-.status-check{background:#dbeafe;color:#1e40af}
-.status-process{background:#fef3c7;color:#92400e}
-.status-done{background:#dcfce7;color:#166534}
-
-.system-nd6{background:#dbeafe;color:#1d4ed8}
-.system-dms{background:#ede9fe;color:#6d28d9}
-
-.action{
-white-space:nowrap;
-}
-
-.action .icon-btn{
-width:34px;
-height:34px;
-padding:0;
-display:inline-flex;
-align-items:center;
-justify-content:center;
-border:none;
-border-radius:9px;
-cursor:pointer;
-margin-right:6px;
-margin-bottom:6px;
-transition:all .2s ease;
-}
-
-.action .icon-btn:hover{
-transform:translateY(-1px);
-}
-
-.action .icon-btn svg{
-width:16px;
-height:16px;
-stroke:currentColor;
-stroke-width:2;
-fill:none;
-stroke-linecap:round;
-stroke-linejoin:round;
-}
-
-.btn-edit{background:#e0f2fe;color:#075985}
-.btn-delete{background:#fee2e2;color:#991b1b}
-.btn-detail{background:#eef2ff;color:#3730a3}
-
-.modal-overlay{
-position:fixed;
-inset:0;
-background:rgba(15,23,42,0.5);
-display:none;
-align-items:center;
-justify-content:center;
-padding:20px;
-z-index:999;
-}
-
-.modal-overlay.show{
-display:flex;
-}
-
-.modal{
-width:min(760px,100%);
-background:#fff;
-border-radius:18px;
-box-shadow:0 20px 50px rgba(15,23,42,0.28);
-overflow:hidden;
-}
-
-.modal-header{
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:18px 20px;
-border-bottom:1px solid var(--border);
-background:#f8fafc;
-}
-
-.modal-title{
-font-size:20px;
-font-weight:700;
-}
-
-.modal-close{
-background:#e2e8f0;
-color:#0f172a;
-padding:8px 12px;
-font-size:12px;
-}
-
-.modal-body{
-padding:20px;
-}
-
-.detail-grid{
-display:grid;
-grid-template-columns:repeat(2,minmax(0,1fr));
-gap:14px;
-margin-bottom:16px;
-}
-
-.detail-item{
-border:1px solid var(--border);
-border-radius:12px;
-padding:12px 14px;
-background:#fff;
-}
-
-.detail-item small{
-display:block;
-font-size:12px;
-color:var(--muted);
-margin-bottom:6px;
-}
-
-.detail-item strong{
-font-size:14px;
-word-break:break-word;
-}
-
-.detail-block{
-border:1px solid var(--border);
-border-radius:12px;
-padding:14px;
-margin-bottom:12px;
-background:#fff;
-}
-
-.detail-block h4{
-font-size:14px;
-margin-bottom:8px;
-}
-
-.detail-block p{
-font-size:14px;
-color:#1e293b;
-white-space:pre-wrap;
-word-break:break-word;
-}
-
-.detail-badge-wrap{
-display:flex;
-align-items:center;
-gap:8px;
-flex-wrap:wrap;
-}
-
-#toast{
-position:fixed;
-right:24px;
-bottom:24px;
-min-width:260px;
-max-width:360px;
-padding:14px 16px;
-border-radius:12px;
-color:#fff;
-font-size:14px;
-font-weight:700;
-box-shadow:0 12px 30px rgba(15,23,42,0.22);
-opacity:0;
-pointer-events:none;
-transform:translateY(20px);
-transition:all .3s ease;
-z-index:9999;
-}
-
-#toast.show{
-opacity:1;
-transform:translateY(0);
-}
-
-.toast-success{background:#16a34a;}
-.toast-edit{background:#2563eb;}
-.toast-delete{background:#dc2626;}
-.toast-info{background:#475569;}
-.toast-error{background:#b91c1c;}
-
-@media (max-width: 768px){
-.detail-grid{
-grid-template-columns:1fr;
-}
-.modal-body{
-padding:16px;
-}
-.modal-header{
-padding:14px 16px;
-}
-#toast{
-right:12px;
-left:12px;
-bottom:12px;
-max-width:none;
-min-width:auto;
-}
-}
-
-@media (max-width: 1366px){
-.container{
-width:min(97%, 1220px);
-}
-.form-grid{
-grid-template-columns:repeat(4,minmax(0,1fr));
-}
-}
-
-@media (max-width: 1100px){
-.cards{
-grid-template-columns:repeat(2,minmax(0,1fr));
-}
-.form-grid{
-grid-template-columns:repeat(2,minmax(0,1fr));
-}
-.toolbar{
-grid-template-columns:1fr 1fr;
-}
-.toolbar .search-block{
-grid-column:1 / -1;
-}
-}
-
-@media (max-width: 768px){
-.container{
-width:min(96%, 100%);
-margin:12px auto 18px;
-}
-.header{
-padding:16px 18px;
-}
-.header h1{
-font-size:22px;
-}
-.cards{
-grid-template-columns:1fr 1fr;
-gap:10px;
-}
-.card h2{
-font-size:24px;
-}
-.form-card,
-.table-card{
-padding:16px;
-}
-.form-grid{
-grid-template-columns:1fr;
-}
-.toolbar{
-grid-template-columns:1fr;
-}
-.form-actions{
-flex-wrap:wrap;
-}
-}
-
-@media (max-width: 480px){
-body{
-font-size:14px;
-}
-.cards{
-grid-template-columns:1fr;
-}
-.header h1{
-font-size:20px;
-}
-.card{
-min-height:78px;
-}
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ticket Monitoring System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f0f4f8;
+      --card: #ffffff;
+      --primary: #1a56db;
+      --primary-dark: #1347c0;
+      --border: #e1e8f0;
+      --text: #0d1b2e;
+      --muted: #6b7a8f;
+      --radius: 14px;
+      --shadow: 0 2px 12px rgba(13,27,46,0.07);
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .layout { display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: 236px; min-width: 236px;
+      background: #0d1b2e;
+      display: flex; flex-direction: column;
+      padding: 24px 0; position: sticky; top: 0; height: 100vh;
+      transition: width .22s ease, min-width .22s ease, transform .22s ease;
+      z-index: 100;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .sidebar-brand {
+      padding: 0 20px 22px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      transition: padding .22s ease;
+    }
+
+    .brand-logo {
+      width: 38px; height: 38px; background: var(--primary);
+      border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;
+      transition: margin .22s ease;
+    }
+    .brand-logo svg { width: 20px; height: 20px; stroke: #fff; stroke-width: 2; fill: none; }
+    .brand-name { color: #fff; font-size: 15px; font-weight: 800; white-space: nowrap; }
+    .brand-sub { color: rgba(255,255,255,0.4); font-size: 12px; margin-top: 1px; white-space: nowrap; }
+
+    .sidebar-nav { padding: 16px 10px; flex: 1; }
+    .nav-section {
+      font-size: 10px; font-weight: 700; letter-spacing: 1.2px; color: rgba(255,255,255,0.28);
+      text-transform: uppercase; padding: 0 10px; margin-bottom: 6px; white-space: nowrap;
+    }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 10px; margin-bottom: 2px;
+      color: rgba(255,255,255,0.5); font-size: 13.5px; font-weight: 600;
+      cursor: pointer; transition: all .18s; user-select: none; white-space: nowrap;
+    }
+    .nav-item svg { width: 17px; height: 17px; stroke: currentColor; stroke-width: 2; fill: none; flex-shrink: 0; }
+    .nav-item span { transition: opacity .18s ease; }
+    .nav-item:hover { color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.06); }
+    .nav-item.active { color: #fff; background: var(--primary); }
+
+    .sidebar-bottom { padding: 16px 10px 0; border-top: 1px solid rgba(255,255,255,0.08); }
+
+    .sync-btn {
+      width: 100%; padding: 10px 12px; border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.12); background: transparent;
+      color: rgba(255,255,255,0.6); font-size: 13px; font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600; cursor: pointer; display: flex; align-items: center;
+      justify-content: center; gap: 8px; transition: all .18s; white-space: nowrap;
+    }
+    .sync-btn svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 2; fill: none; flex-shrink: 0; }
+    .sync-btn span { transition: opacity .18s ease; }
+    .sync-btn:hover { background: rgba(255,255,255,0.09); color: #fff; }
+    .sync-btn.spinning svg { animation: spin .8s linear infinite; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .sidebar-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(13,27,46,.45);
+      opacity: 0;
+      pointer-events: none;
+      transition: .2s ease;
+      z-index: 90;
+    }
+
+    .main {
+      flex: 1; overflow-x: hidden; padding: 26px 30px; min-width: 0;
+      transition: padding .22s ease;
+    }
+
+    .page { display: none; animation: fadeIn .25s ease; }
+    .page.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+    .page-header {
+      display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 22px; gap: 14px;
+    }
+
+    .page-header-left {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .menu-toggle {
+      width: 42px;
+      height: 42px;
+      padding: 0;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .menu-toggle svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      fill: none;
+    }
+
+    .page-header h1 { font-size: 25px; font-weight: 800; }
+    .page-header p { color: var(--muted); font-size: 13.5px; margin-top: 2px; }
+    .header-actions { display: flex; gap: 9px; flex-shrink: 0; flex-wrap: wrap; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 13px; margin-bottom: 22px; }
+    .stat-card {
+      background: var(--card); border-radius: var(--radius);
+      padding: 17px 19px; box-shadow: var(--shadow); border: 1px solid var(--border);
+      position: relative; overflow: hidden; transition: transform .2s;
+    }
+    .stat-card:hover { transform: translateY(-2px); }
+    .stat-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; margin-bottom: 11px;
+    }
+    .stat-icon svg { width: 17px; height: 17px; stroke: currentColor; stroke-width: 2.2; fill: none; }
+    .stat-card.blue .stat-icon { background: #eff6ff; color: #1a56db; }
+    .stat-card.sky .stat-icon { background: #f0f9ff; color: #0284c7; }
+    .stat-card.amber .stat-icon { background: #fffbeb; color: #d97706; }
+    .stat-card.green .stat-icon { background: #f0fdf4; color: #16a34a; }
+    .stat-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+    .stat-val { font-size: 30px; font-weight: 800; line-height: 1.1; font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+    .stat-card.blue .stat-val { color: #1a56db; }
+    .stat-card.sky .stat-val { color: #0284c7; }
+    .stat-card.amber .stat-val { color: #d97706; }
+    .stat-card.green .stat-val { color: #16a34a; }
+
+    .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 20px; }
+    .card-head { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .card-title { font-size: 16px; font-weight: 700; }
+    .card-body { padding: 20px; }
+
+    .form-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 13px; }
+    .field-full { grid-column: 1 / -1; }
+    label { display: block; font-size: 11.5px; font-weight: 700; color: #334155; margin-bottom: 5px; letter-spacing: .2px; text-transform: uppercase; }
+
+    input, select, textarea {
+      width: 100%; padding: 9px 12px; border-radius: 9px;
+      border: 1.5px solid var(--border); font-size: 13.5px;
+      background: #fff; color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: border-color .18s, box-shadow .18s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none; border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(26,86,219,.1);
+    }
+
+    textarea { min-height: 80px; resize: vertical; }
+    .form-actions { display: flex; gap: 9px; margin-top: 16px; flex-wrap: wrap; }
+
+    button, .btn {
+      padding: 9px 16px; border: none; border-radius: 9px;
+      font-weight: 700; font-size: 13px; cursor: pointer;
+      transition: all .18s; display: inline-flex; align-items: center; gap: 6px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    button svg, .btn svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2.2; fill: none; }
+    button:hover:not(:disabled) { transform: translateY(-1px); }
+    button:disabled { opacity: .55; cursor: not-allowed; transform: none !important; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-dark); box-shadow: 0 4px 14px rgba(26,86,219,.3); }
+    .btn-secondary { background: #e8edf4; color: #374151; }
+    .btn-secondary:hover:not(:disabled) { background: #d4dde8; }
+    .btn-success { background: #16a34a; color: #fff; }
+    .btn-success:hover:not(:disabled) { background: #15803d; box-shadow: 0 4px 14px rgba(22,163,74,.3); }
+    .btn-ghost { background: transparent; color: var(--muted); border: 1.5px solid var(--border); }
+    .btn-ghost:hover:not(:disabled) { border-color: #94a3b8; color: var(--text); background: #f1f5f9; }
+    .btn-sm { padding: 7px 12px; font-size: 12px; }
+
+    .toolbar { display: grid; grid-template-columns: 1fr 160px 160px auto auto; gap: 9px; margin-bottom: 14px; align-items: end; }
+    .tb-group { display: flex; flex-direction: column; gap: 4px; }
+    .tb-label { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: .3px; text-transform: uppercase; }
+    .search-wrap { position: relative; }
+    .search-wrap svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; stroke: #94a3b8; stroke-width: 2; fill: none; pointer-events: none; }
+    .search-wrap input { padding-left: 34px; }
+
+    .table-wrap { overflow: auto; border-radius: 11px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; min-width: 1040px; }
+    thead th {
+      background: #f4f8ff; font-size: 10.5px; font-weight: 700;
+      color: #3b5998; text-transform: uppercase; letter-spacing: .6px;
+      padding: 11px 12px; border-bottom: 1.5px solid var(--border);
+      white-space: nowrap; position: sticky; top: 0;
+    }
+    tbody td { padding: 10px 12px; border-bottom: 1px solid #f0f4fb; font-size: 13px; vertical-align: middle; }
+    tbody tr:hover td { background: #f7faff; }
+    tbody tr:last-child td { border-bottom: none; }
+    .date-cell { font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: nowrap; color: var(--muted); }
+    .notiket-cell { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 12px; }
+    .keluhan-cell { max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .bdot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .p-low { background: #f0fdf4; color: #16a34a; } .p-low .bdot { background: #16a34a; }
+    .p-med { background: #fffbeb; color: #b45309; } .p-med .bdot { background: #f59e0b; }
+    .p-high { background: #fef2f2; color: #dc2626; } .p-high .bdot { background: #ef4444; }
+    .s-check { background: #eff6ff; color: #1d4ed8; } .s-check .bdot { background: #3b82f6; }
+    .s-proc { background: #fffbeb; color: #b45309; } .s-proc .bdot { background: #f59e0b; }
+    .s-done { background: #f0fdf4; color: #15803d; } .s-done .bdot { background: #22c55e; }
+    .sys-nd6 { background: #eff6ff; color: #1d4ed8; }
+    .sys-dms { background: #faf5ff; color: #7c3aed; }
+
+    .acts { display: flex; gap: 5px; }
+    .icon-btn {
+      width: 31px; height: 31px; padding: 0; border: none; border-radius: 8px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .18s;
+    }
+    .icon-btn svg { width: 13.5px; height: 13.5px; stroke: currentColor; stroke-width: 2.2; fill: none; }
+    .icon-btn:hover:not(:disabled) { transform: translateY(-1px); }
+    .icon-btn:disabled { opacity: .4; cursor: not-allowed; }
+    .ib-view { background: #eef2ff; color: #4f46e5; }
+    .ib-edit { background: #e0f2fe; color: #075985; }
+    .ib-del  { background: #fef2f2; color: #dc2626; }
+
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(13,27,46,.55);
+      display: none; align-items: center; justify-content: center;
+      padding: 20px; z-index: 9990; backdrop-filter: blur(3px);
+    }
+    .modal-overlay.show { display: flex; }
+
+    .modal {
+      width: min(760px, 100%); background: #fff; border-radius: 18px;
+      box-shadow: 0 24px 60px rgba(13,27,46,.2); overflow: hidden;
+      animation: mIn .22s ease;
+    }
+    @keyframes mIn { from { transform: scale(.95) translateY(10px); opacity: 0; } }
+
+    .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); background: #f9fafb; }
+    .modal-title { font-size: 17px; font-weight: 700; }
+    .modal-close { background: #e8edf4; color: #374151; padding: 6px 14px; font-size: 12px; }
+    .modal-body { padding: 20px; }
+    .detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 11px; margin-bottom: 14px; }
+    .detail-item { border: 1px solid var(--border); border-radius: 11px; padding: 11px 14px; }
+    .detail-item small { display: block; font-size: 10.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+    .detail-item strong { font-size: 14px; font-weight: 600; word-break: break-word; }
+    .detail-block { border: 1px solid var(--border); border-radius: 11px; padding: 14px; margin-bottom: 11px; }
+    .detail-block h4 { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 7px; }
+    .detail-block p { font-size: 13.5px; line-height: 1.65; white-space: pre-wrap; word-break: break-word; }
+
+    .charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-bottom: 20px; }
+    .chart-card { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+    .chart-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 14px; }
+    .chart-wrap { position: relative; height: 230px; }
+
+    .empty { text-align: center; padding: 44px 20px; color: var(--muted); }
+    .empty svg { width: 44px; height: 44px; stroke: #cbd5e1; stroke-width: 1.5; fill: none; margin: 0 auto 10px; display: block; }
+    .empty h3 { font-size: 15px; color: #94a3b8; margin-bottom: 5px; }
+    .empty p { font-size: 13px; }
+
+    #toast {
+      position: fixed; right: 22px; bottom: 22px; min-width: 250px; max-width: 370px;
+      padding: 13px 16px; border-radius: 11px; color: #fff;
+      font-size: 13.5px; font-weight: 600; box-shadow: 0 10px 28px rgba(13,27,46,.2);
+      opacity: 0; pointer-events: none; transform: translateY(14px);
+      transition: all .28s ease; z-index: 99999;
+      display: flex; align-items: center; gap: 9px;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+    #toast svg { width: 17px; height: 17px; stroke: currentColor; stroke-width: 2.2; fill: none; flex-shrink: 0; }
+    .t-success { background: #16a34a; }
+    .t-edit    { background: #1a56db; }
+    .t-delete  { background: #dc2626; }
+    .t-info    { background: #475569; }
+    .t-error   { background: #b91c1c; }
+
+    .spinner { width: 26px; height: 26px; border: 3px solid #e2e8f0; border-top-color: var(--primary); border-radius: 50%; animation: spin .75s linear infinite; margin: 0 auto 8px; }
+    .loading-td { text-align: center; padding: 36px; color: var(--muted); font-size: 13px; }
+
+    body.sidebar-collapsed .sidebar {
+      width: 84px;
+      min-width: 84px;
+    }
+
+    body.sidebar-collapsed .sidebar-brand {
+      padding-left: 14px;
+      padding-right: 14px;
+    }
+
+    body.sidebar-collapsed .brand-logo {
+      margin: 0 auto 10px;
+    }
+
+    body.sidebar-collapsed .brand-name,
+    body.sidebar-collapsed .brand-sub,
+    body.sidebar-collapsed .nav-section,
+    body.sidebar-collapsed .nav-item span,
+    body.sidebar-collapsed .sync-btn span {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+      display: none;
+    }
+
+    body.sidebar-collapsed .nav-item {
+      justify-content: center;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    body.sidebar-collapsed .sync-btn {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    @media (max-width: 1100px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .charts-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 860px) {
+      .sidebar {
+        display: flex;
+        position: fixed;
+        left: 0;
+        top: 0;
+        transform: translateX(-100%);
+        width: 236px;
+        min-width: 236px;
+        height: 100vh;
+      }
+
+      body.sidebar-open .sidebar {
+        transform: translateX(0);
+      }
+
+      body.sidebar-open .sidebar-overlay {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      body.sidebar-collapsed .sidebar {
+        width: 236px;
+        min-width: 236px;
+      }
+
+      body.sidebar-collapsed .brand-name,
+      body.sidebar-collapsed .brand-sub,
+      body.sidebar-collapsed .nav-section,
+      body.sidebar-collapsed .nav-item span,
+      body.sidebar-collapsed .sync-btn span {
+        opacity: 1;
+        width: auto;
+        overflow: visible;
+        display: initial;
+      }
+
+      body.sidebar-collapsed .nav-item {
+        justify-content: flex-start;
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      body.sidebar-collapsed .sync-btn {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      body.sidebar-collapsed .brand-logo {
+        margin: 0 0 10px 0;
+      }
+
+      .main { padding: 18px 14px; }
+      .form-grid { grid-template-columns: repeat(2, 1fr); }
+      .toolbar { grid-template-columns: 1fr 1fr; }
+      .toolbar .search-block { grid-column: 1/-1; }
+    }
+
+    @media (max-width: 560px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .toolbar { grid-template-columns: 1fr; }
+      .detail-grid { grid-template-columns: 1fr; }
+      .page-header { flex-direction: column; align-items: stretch; }
+      .header-actions { width: 100%; }
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="container">
-
-<div class="header">
-<h1>Ticket Monitoring System</h1>
-<p>Pencatatan tiket ND6 & DMS — CRUD sederhana menggunakan HTML, CSS dan JavaScript.</p>
-</div>
-
-<div class="cards">
-<div class="card card-total"><small>Total Tiket</small><h2 id="totalTiket">0</h2></div>
-<div class="card card-checking"><small>On Checking</small><h2 id="checking">0</h2></div>
-<div class="card card-process"><small>On Process</small><h2 id="process">0</h2></div>
-<div class="card card-done"><small>DONE</small><h2 id="done">0</h2></div>
-</div>
-
-<div class="form-card">
-<h3>Form Input Tiket</h3>
-
-<form id="ticketForm">
-
-<div class="form-grid">
-
-<div>
-<label for="tanggal">Tanggal</label>
-<input type="date" id="tanggal" required>
-</div>
-
-<div>
-<label for="notiket">No Tiket</label>
-<input type="text" id="notiket" required>
-</div>
-
-<div>
-<label for="sistem">Sistem</label>
-<select id="sistem">
-<option>ND6</option>
-<option>DMS</option>
-</select>
-</div>
-
-<div>
-<label for="pic">PIC</label>
-<input type="text" id="pic" required>
-</div>
-
-<div>
-<label for="priority">Priority</label>
-<select id="priority">
-<option>Low</option>
-<option>Medium</option>
-<option>High</option>
-</select>
-</div>
-
-<div>
-<label for="status">Status</label>
-<select id="status">
-<option>On Checking</option>
-<option>On Process</option>
-<option>DONE</option>
-</select>
-</div>
-
-<div class="field-full">
-<label for="keluhan">Keluhan / Penjelasan</label>
-<textarea id="keluhan" required></textarea>
-</div>
-
-<div class="field-full">
-<label for="penyelesaian">Penyelesaian</label>
-<textarea id="penyelesaian"></textarea>
-</div>
-
-</div>
-
-<div class="form-actions">
-<button class="btn-primary" type="submit" id="submitBtn">Simpan Tiket</button>
-<button type="button" class="btn-secondary" onclick="resetForm()">Reset</button>
-</div>
-
-</form>
-</div>
-
-<div class="table-card">
-<h3>Daftar Tiket</h3>
-
-<div class="toolbar">
-  <div class="toolbar-group search-block">
-    <div class="toolbar-label">Cari Tiket</div>
-    <div class="search-wrap">
-      <svg viewBox="0 0 24 24">
-        <circle cx="11" cy="11" r="7"></circle>
-        <path d="M20 20l-3.5-3.5"></path>
-      </svg>
-      <input type="text" id="search" placeholder="Cari no tiket, keluhan, atau PIC...">
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      </div>
+      <div class="brand-name">Ticket Monitor</div>
+      <div class="brand-sub">ND6 &amp; DMS System</div>
     </div>
-  </div>
 
-  <div class="toolbar-group">
-    <div class="toolbar-label">Filter Sistem</div>
-    <select id="filterSistem">
-      <option value="">Semua Sistem</option>
-      <option>ND6</option>
-      <option>DMS</option>
-    </select>
-  </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Menu Utama</div>
 
-  <div class="toolbar-group">
-    <div class="toolbar-label">Filter Status</div>
-    <select id="filterStatus">
-      <option value="">Semua Status</option>
-      <option>On Checking</option>
-      <option>On Process</option>
-      <option>DONE</option>
-    </select>
-  </div>
+      <div class="nav-item active" id="nav-dashboard" onclick="showPage('dashboard'); closeSidebarMobile();">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span>Dashboard</span>
+      </div>
 
-  <div class="toolbar-group">
-    <div class="toolbar-label">Aksi</div>
-    <button type="button" class="btn-filter-reset" onclick="resetFilters()">Reset Filter</button>
-  </div>
-</div>
+      <div class="nav-item" id="nav-tambah" onclick="openAddForm(); closeSidebarMobile();">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+        <span>Tambah Tiket</span>
+      </div>
 
-<div class="table-wrap">
-<table>
-<thead>
-<tr>
-<th>No</th>
-<th>Tanggal</th>
-<th>No Tiket</th>
-<th>Keluhan</th>
-<th>Sistem</th>
-<th>Penyelesaian</th>
-<th>PIC</th>
-<th>Priority</th>
-<th>Status</th>
-<th>Aksi</th>
-</tr>
-</thead>
-<tbody id="tableData"></tbody>
-</table>
-</div>
-</div>
+      <div class="nav-item" id="nav-statistik" onclick="showPage('statistik'); closeSidebarMobile();">
+        <svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        <span>Statistik</span>
+      </div>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <button class="sync-btn" id="syncBtn" onclick="loadTickets()">
+        <svg viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        <span>Sync Data</span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebarMobile()"></div>
+
+  <main class="main">
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div class="page-header-left">
+          <button class="menu-toggle" onclick="toggleSidebar()" title="Toggle sidebar">
+            <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <div>
+            <h1>Dashboard</h1>
+            <p>Monitoring tiket ND6 &amp; DMS secara real-time</p>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button class="btn btn-ghost btn-sm" onclick="exportCSV()">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            CSV
+          </button>
+          <button class="btn btn-success btn-sm" onclick="exportExcel()">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Excel
+          </button>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card blue">
+          <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+          <div class="stat-label">Total Tiket</div>
+          <div class="stat-val" id="sTotal">0</div>
+        </div>
+        <div class="stat-card sky">
+          <div class="stat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+          <div class="stat-label">On Checking</div>
+          <div class="stat-val" id="sChecking">0</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div class="stat-label">On Process</div>
+          <div class="stat-val" id="sProcess">0</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+          <div class="stat-label">DONE</div>
+          <div class="stat-val" id="sDone">0</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Daftar Tiket</span>
+          <button class="btn btn-primary btn-sm" onclick="openAddForm()">
+            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            Tambah
+          </button>
+        </div>
+
+        <div class="card-body">
+          <div class="toolbar">
+            <div class="tb-group search-block">
+              <div class="tb-label">Cari</div>
+              <div class="search-wrap">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+                <input type="text" id="search" placeholder="No tiket, keluhan, PIC...">
+              </div>
+            </div>
+
+            <div class="tb-group">
+              <div class="tb-label">Sistem</div>
+              <select id="fSistem">
+                <option value="">Semua</option>
+                <option>ND6</option>
+                <option>DMS</option>
+              </select>
+            </div>
+
+            <div class="tb-group">
+              <div class="tb-label">Status</div>
+              <select id="fStatus">
+                <option value="">Semua</option>
+                <option>On Checking</option>
+                <option>On Process</option>
+                <option>DONE</option>
+              </select>
+            </div>
+
+            <div class="tb-group">
+              <div class="tb-label" style="opacity:0">x</div>
+              <button class="btn btn-secondary btn-sm" onclick="resetFilters()">Reset</button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Tanggal</th>
+                  <th>No Tiket</th>
+                  <th>Keluhan</th>
+                  <th>Sistem</th>
+                  <th>PIC</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody">
+                <tr><td class="loading-td" colspan="9"><div class="spinner"></div>Memuat data...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="page-tambah">
+      <div class="page-header">
+        <div class="page-header-left">
+          <button class="menu-toggle" onclick="toggleSidebar()" title="Toggle sidebar">
+            <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <div>
+            <h1 id="formTitle">Tambah Tiket</h1>
+            <p id="formSubtitle">Isi form untuk membuat tiket baru</p>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button class="btn btn-ghost btn-sm" onclick="showPage('dashboard')">
+            <svg viewBox="0 0 24 24"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+            Kembali
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><span class="card-title">Form Tiket</span></div>
+        <div class="card-body">
+          <form id="ticketForm">
+            <div class="form-grid">
+              <div>
+                <label for="fTanggal">Tanggal *</label>
+                <input type="date" id="fTanggal" required>
+              </div>
+
+              <div>
+                <label for="fNoTiket">No Tiket *</label>
+                <input type="text" id="fNoTiket" placeholder="INC-2024-001" required>
+              </div>
+
+              <div>
+                <label for="fSistemForm">Sistem</label>
+                <select id="fSistemForm">
+                  <option>ND6</option>
+                  <option>DMS</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="fPic">PIC *</label>
+                <input type="text" id="fPic" placeholder="Nama PIC" required>
+              </div>
+
+              <div>
+                <label for="fPriority">Priority</label>
+                <select id="fPriority">
+                  <option>Low</option>
+                  <option>Medium</option>
+                  <option>High</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="fStatusForm">Status</label>
+                <select id="fStatusForm">
+                  <option>On Checking</option>
+                  <option>On Process</option>
+                  <option>DONE</option>
+                </select>
+              </div>
+
+              <div class="field-full">
+                <label for="fKeluhan">Keluhan / Penjelasan *</label>
+                <textarea id="fKeluhan" placeholder="Deskripsi masalah..." required></textarea>
+              </div>
+
+              <div class="field-full">
+                <label for="fPenyelesaian">Penyelesaian</label>
+                <textarea id="fPenyelesaian" placeholder="Langkah penyelesaian..."></textarea>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" id="submitBtn">
+                <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Simpan Tiket
+              </button>
+              <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="page-statistik">
+      <div class="page-header">
+        <div class="page-header-left">
+          <button class="menu-toggle" onclick="toggleSidebar()" title="Toggle sidebar">
+            <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <div>
+            <h1>Statistik</h1>
+            <p>Grafik analisis tiket</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card"><h3>Distribusi Status</h3><div class="chart-wrap"><canvas id="cStatus"></canvas></div></div>
+        <div class="chart-card"><h3>Distribusi Priority</h3><div class="chart-wrap"><canvas id="cPriority"></canvas></div></div>
+        <div class="chart-card"><h3>Tiket per Sistem</h3><div class="chart-wrap"><canvas id="cSistem"></canvas></div></div>
+        <div class="chart-card"><h3>Tiket per Bulan</h3><div class="chart-wrap"><canvas id="cBulan"></canvas></div></div>
+      </div>
+    </div>
+  </main>
 </div>
 
 <div class="modal-overlay" id="detailModal">
   <div class="modal">
-    <div class="modal-header">
+    <div class="modal-head">
       <div class="modal-title">Detail Tiket</div>
-      <button type="button" class="modal-close" onclick="closeDetail()">Tutup</button>
+      <button class="btn modal-close" onclick="closeModal()">✕ Tutup</button>
     </div>
     <div class="modal-body">
       <div class="detail-grid">
-        <div class="detail-item">
-          <small>No Tiket</small>
-          <strong id="detailNoTiket">-</strong>
-        </div>
-        <div class="detail-item">
-          <small>Tanggal</small>
-          <strong id="detailTanggal">-</strong>
-        </div>
-        <div class="detail-item">
-          <small>Sistem</small>
-          <div class="detail-badge-wrap" id="detailSistemWrap"></div>
-        </div>
-        <div class="detail-item">
-          <small>PIC</small>
-          <strong id="detailPic">-</strong>
-        </div>
-        <div class="detail-item">
-          <small>Priority</small>
-          <div class="detail-badge-wrap" id="detailPriorityWrap"></div>
-        </div>
-        <div class="detail-item">
-          <small>Status</small>
-          <div class="detail-badge-wrap" id="detailStatusWrap"></div>
-        </div>
+        <div class="detail-item"><small>No Tiket</small><strong id="dNoTiket">-</strong></div>
+        <div class="detail-item"><small>Tanggal</small><strong id="dTanggal">-</strong></div>
+        <div class="detail-item"><small>Sistem</small><div id="dSistem"></div></div>
+        <div class="detail-item"><small>PIC</small><strong id="dPic">-</strong></div>
+        <div class="detail-item"><small>Priority</small><div id="dPriority"></div></div>
+        <div class="detail-item"><small>Status</small><div id="dStatus"></div></div>
       </div>
-
-      <div class="detail-block">
-        <h4>Keluhan / Penjelasan</h4>
-        <p id="detailKeluhan">-</p>
-      </div>
-
-      <div class="detail-block">
-        <h4>Penyelesaian</h4>
-        <p id="detailPenyelesaian">-</p>
-      </div>
+      <div class="detail-block"><h4>Keluhan / Penjelasan</h4><p id="dKeluhan">-</p></div>
+      <div class="detail-block"><h4>Penyelesaian</h4><p id="dPenyelesaian">-</p></div>
     </div>
   </div>
 </div>
@@ -808,390 +717,521 @@ min-height:78px;
 <div id="toast"></div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzE1LybU-4kt-gs1i6I0de0CGWkNs9K1BedM4iZOAKhcjuIttKKJa338sCaMFZFyUpEKg/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwdNxdpWOT20p3w1cmHE3zD1CmgF1IzEl_cw7p1sZuVBoFc1fxxH2CJf96TU7DW90pk/exec";
 
 let tickets = [];
-let editIndex = -1;
-let toastTimer = null;
-let isSubmitting = false;
+let editID = null;
+let busy = false;
+let chartInst = {};
+let toastTmr = null;
 
-const ticketForm = document.getElementById("ticketForm");
-const submitBtn = document.getElementById("submitBtn");
-const searchInput = document.getElementById("search");
-const filterSistemEl = document.getElementById("filterSistem");
-const filterStatusEl = document.getElementById("filterStatus");
-const tableData = document.getElementById("tableData");
-const toastEl = document.getElementById("toast");
+const tableBody       = document.getElementById("tableBody");
+const searchEl        = document.getElementById("search");
+const fSistemEl       = document.getElementById("fSistem");
+const fStatusFilterEl = document.getElementById("fStatus");
+const fStatusFormEl   = document.getElementById("fStatusForm");
+const toastEl         = document.getElementById("toast");
+const submitBtn       = document.getElementById("submitBtn");
+const form            = document.getElementById("ticketForm");
 
-const tanggalEl = document.getElementById("tanggal");
-const noTiketEl = document.getElementById("notiket");
-const keluhanEl = document.getElementById("keluhan");
-const sistemEl = document.getElementById("sistem");
-const penyelesaianEl = document.getElementById("penyelesaian");
-const picEl = document.getElementById("pic");
-const priorityEl = document.getElementById("priority");
-const statusEl = document.getElementById("status");
-
-function showToast(message, type = "success") {
-  if (toastTimer) clearTimeout(toastTimer);
-
-  toastEl.textContent = message;
-  toastEl.className = "";
-
-  if (type === "success") toastEl.classList.add("toast-success");
-  if (type === "edit") toastEl.classList.add("toast-edit");
-  if (type === "delete") toastEl.classList.add("toast-delete");
-  if (type === "info") toastEl.classList.add("toast-info");
-  if (type === "error") toastEl.classList.add("toast-error");
-
-  toastEl.classList.add("show");
-
-  toastTimer = setTimeout(() => {
-    toastEl.classList.remove("show");
-  }, 3000);
+function getTodayLocal() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 }
 
-function setSubmitLoading(loading, label = "Simpan Tiket") {
-  isSubmitting = loading;
-  submitBtn.disabled = loading;
-  submitBtn.textContent = loading ? "Menyimpan..." : label;
+(function init() {
+  document.getElementById("fTanggal").value = getTodayLocal();
+  loadTickets();
+})();
+
+const TICONS = {
+  success: '<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+  edit:    '<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
+  delete:  '<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>',
+  info:    '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+  error:   '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+};
+
+function showToast(msg, type = "success") {
+  if (toastTmr) clearTimeout(toastTmr);
+  toastEl.innerHTML = (TICONS[type] || "") + msg;
+  toastEl.className = `t-${type} show`;
+  toastTmr = setTimeout(() => toastEl.classList.remove("show"), 3500);
 }
 
-function resetForm() {
-  ticketForm.reset();
-  editIndex = -1;
-  submitBtn.textContent = "Simpan Tiket";
-  submitBtn.disabled = false;
+function toggleSidebar() {
+  if (window.innerWidth <= 860) {
+    document.body.classList.toggle("sidebar-open");
+  } else {
+    document.body.classList.toggle("sidebar-collapsed");
+  }
 }
 
-function resetFilters() {
-  searchInput.value = "";
-  filterSistemEl.value = "";
-  filterStatusEl.value = "";
-  render();
-  showToast("Filter berhasil direset", "info");
+function closeSidebarMobile() {
+  document.body.classList.remove("sidebar-open");
 }
 
-function convertSheetDateToInput(dateStr) {
-  if (!dateStr) return "";
+window.addEventListener("resize", () => {
+  if (window.innerWidth > 860) {
+    document.body.classList.remove("sidebar-open");
+  }
+});
 
-  const raw = String(dateStr).trim();
+function showPage(name) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+  document.getElementById("page-" + name)?.classList.add("active");
+  document.getElementById("nav-" + name)?.classList.add("active");
+  if (name === "statistik") buildCharts();
+}
 
-  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+function openAddForm() {
+  resetForm();
+  document.getElementById("formTitle").textContent = "Tambah Tiket";
+  document.getElementById("formSubtitle").textContent = "Isi form untuk membuat tiket baru";
+  showPage("tambah");
+}
 
-  const monthMap = {
-    jan:"01", feb:"02", mar:"03", apr:"04", may:"05", jun:"06",
-    jul:"07", aug:"08", sep:"09", oct:"10", nov:"11", dec:"12"
+function toInput(s) {
+  if (!s) return "";
+  s = String(s).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  const mm = {jan:"01",feb:"02",mar:"03",apr:"04",may:"05",jun:"06",jul:"07",aug:"08",sep:"09",oct:"10",nov:"11",dec:"12"};
+  const m = s.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/);
+  if (m) return `${m[3]}-${mm[m[2].toLowerCase()] || "01"}-${m[1].padStart(2,"0")}`;
+  return s;
+}
+
+function fmtDate(s) {
+  const d = toInput(s);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(d)) {
+    const p = d.split("-");
+    return `${p[2]}-${p[1]}-${p[0]}`;
+  }
+  return s || "-";
+}
+
+const bPriority = v => ({
+  High:   `<span class="badge p-high"><span class="bdot"></span>High</span>`,
+  Medium: `<span class="badge p-med"><span class="bdot"></span>Medium</span>`,
+  Low:    `<span class="badge p-low"><span class="bdot"></span>Low</span>`
+}[v] || `<span class="badge p-low"><span class="bdot"></span>Low</span>`);
+
+const bStatus = v => v === "DONE"
+  ? `<span class="badge s-done"><span class="bdot"></span>DONE</span>`
+  : v === "On Process"
+    ? `<span class="badge s-proc"><span class="bdot"></span>On Process</span>`
+    : `<span class="badge s-check"><span class="bdot"></span>On Checking</span>`;
+
+const bSistem = v => v === "DMS"
+  ? `<span class="badge sys-dms">DMS</span>`
+  : `<span class="badge sys-nd6">ND6</span>`;
+
+function norm(item) {
+  const stMap = s => {
+    const v = (s || "").trim().toLowerCase();
+    if (v === "done") return "DONE";
+    if (v === "on process") return "On Process";
+    return "On Checking";
   };
 
-  const match = raw.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/);
-  if (match) {
-    const day = match[1].padStart(2, "0");
-    const month = monthMap[match[2].toLowerCase()] || "01";
-    const year = match[3];
-    return `${year}-${month}-${day}`;
-  }
-
-  return raw;
-}
-
-function formatDate(dateStr) {
-  if (!dateStr) return "-";
-
-  const inputDate = convertSheetDateToInput(dateStr);
-  if (/^\d{4}-\d{2}-\d{2}$/.test(inputDate)) {
-    const parts = inputDate.split("-");
-    return `${parts[2]}-${parts[1]}-${parts[0]}`;
-  }
-
-  return String(dateStr);
-}
-
-function normalizeStatus(status) {
-  const value = String(status || "").trim().toLowerCase();
-  if (value === "done") return "DONE";
-  if (value === "on process") return "On Process";
-  return "On Checking";
-}
-
-function badgePriority(priority) {
-  if (priority === "High") return '<span class="badge priority-high">High</span>';
-  if (priority === "Medium") return '<span class="badge priority-medium">Medium</span>';
-  return '<span class="badge priority-low">Low</span>';
-}
-
-function badgeStatus(status) {
-  if (status === "DONE") return '<span class="badge status-done">DONE</span>';
-  if (status === "On Process") return '<span class="badge status-process">On Process</span>';
-  return '<span class="badge status-check">On Checking</span>';
-}
-
-function badgeSistem(sistem) {
-  if (sistem === "DMS") return '<span class="badge system-dms">DMS</span>';
-  return '<span class="badge system-nd6">ND6</span>';
-}
-
-function normalizeTicket(item) {
   return {
-    ID: item.ID ? String(item.ID).trim() : "",
-    tanggal: convertSheetDateToInput(item.Tanggal),
-    notiket: item.NoTiket ? String(item.NoTiket) : "",
-    keluhan: item.Keluhan ? String(item.Keluhan) : "",
-    sistem: item.Sistem ? String(item.Sistem) : "ND6",
-    penyelesaian: item.Penyelesaian ? String(item.Penyelesaian) : "",
-    pic: item.PIC ? String(item.PIC) : "",
-    priority: item.Priority ? String(item.Priority) : "Low",
-    status: normalizeStatus(item.Status)
+    ID:           String(item.ID || "").trim(),
+    tanggal:      toInput(item.Tanggal || item.tanggal || ""),
+    notiket:      String(item.NoTiket || item.notiket || ""),
+    keluhan:      String(item.Keluhan || item.keluhan || ""),
+    sistem:       String(item.Sistem || item.sistem || "ND6"),
+    penyelesaian: String(item.Penyelesaian || item.penyelesaian || ""),
+    pic:          String(item.PIC || item.pic || ""),
+    priority:     String(item.Priority || item.priority || "Low"),
+    status:       stMap(item.Status || item.status || ""),
   };
 }
 
 function updateStats() {
-  document.getElementById("totalTiket").innerText = tickets.length;
-  document.getElementById("checking").innerText = tickets.filter(t => t.status === "On Checking").length;
-  document.getElementById("process").innerText = tickets.filter(t => t.status === "On Process").length;
-  document.getElementById("done").innerText = tickets.filter(t => t.status === "DONE").length;
+  document.getElementById("sTotal").textContent    = tickets.length;
+  document.getElementById("sChecking").textContent = tickets.filter(t => t.status === "On Checking").length;
+  document.getElementById("sProcess").textContent  = tickets.filter(t => t.status === "On Process").length;
+  document.getElementById("sDone").textContent     = tickets.filter(t => t.status === "DONE").length;
 }
 
-function render(message = "") {
-  const search = searchInput.value.toLowerCase();
-  const filterSistem = filterSistemEl.value;
-  const filterStatus = filterStatusEl.value;
+function render() {
+  const q = searchEl.value.toLowerCase();
+  const fs = fSistemEl.value;
+  const fst = fStatusFilterEl.value;
 
-  const filtered = tickets.filter(t => {
-    const noTiket = (t.notiket || "").toLowerCase();
-    const keluhan = (t.keluhan || "").toLowerCase();
-    const pic = (t.pic || "").toLowerCase();
+  const filtered = tickets.filter(t =>
+    (!q || [t.notiket, t.keluhan, t.pic].some(v => (v || "").toLowerCase().includes(q))) &&
+    (!fs || t.sistem === fs) &&
+    (!fst || t.status === fst)
+  );
 
-    return (
-      (noTiket.includes(search) || keluhan.includes(search) || pic.includes(search)) &&
-      (filterSistem === "" || t.sistem === filterSistem) &&
-      (filterStatus === "" || t.status === filterStatus)
-    );
-  });
-
-  tableData.innerHTML = "";
-
-  if (filtered.length === 0) {
-    tableData.innerHTML = `<tr><td colspan="10" style="text-align:center;color:#64748b;padding:20px;">${message || "Belum ada data tiket"}</td></tr>`;
+  if (!filtered.length) {
+    tableBody.innerHTML = `<tr><td colspan="9"><div class="empty">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 15h8M9 9h.01M15 9h.01"/></svg>
+      <h3>Tidak ada tiket ditemukan</h3>
+      <p>Coba ubah filter atau tambah tiket baru</p>
+    </div></td></tr>`;
   } else {
-    filtered.forEach((t, i) => {
-      const index = tickets.indexOf(t);
-      const disableEditDelete = !t.ID;
-      tableData.innerHTML += `
-      <tr>
-        <td>${i + 1}</td>
-        <td class="date-cell">${formatDate(t.tanggal)}</td>
-        <td><b>${t.notiket || "-"}</b></td>
-        <td>${t.keluhan || "-"}</td>
-        <td>${badgeSistem(t.sistem || "ND6")}</td>
-        <td>${t.penyelesaian || "-"}</td>
+    tableBody.innerHTML = filtered.map((t, i) => {
+      const idx = tickets.indexOf(t);
+      const klhn = (t.keluhan || "").length > 55 ? t.keluhan.substring(0, 55) + "…" : t.keluhan || "-";
+
+      return `<tr>
+        <td style="color:var(--muted);font-size:12px">${i + 1}</td>
+        <td class="date-cell">${fmtDate(t.tanggal)}</td>
+        <td><span class="notiket-cell">${t.notiket || "-"}</span></td>
+        <td class="keluhan-cell" title="${(t.keluhan || "").replace(/"/g, "&quot;")}">${klhn}</td>
+        <td>${bSistem(t.sistem)}</td>
         <td>${t.pic || "-"}</td>
-        <td>${badgePriority(t.priority || "Low")}</td>
-        <td>${badgeStatus(t.status || "On Checking")}</td>
-        <td class="action">
-          <button class="icon-btn btn-detail" onclick="showDetail(${index})" title="Detail" aria-label="Detail">
-            <svg viewBox="0 0 24 24">
-              <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path>
-              <circle cx="12" cy="12" r="3"></circle>
-            </svg>
-          </button>
-          <button class="icon-btn btn-edit" onclick="edit(${index})" title="${disableEditDelete ? 'ID kosong di sheet' : 'Edit'}" aria-label="Edit" ${disableEditDelete ? "disabled" : ""}>
-            <svg viewBox="0 0 24 24">
-              <path d="M12 20h9"></path>
-              <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
-            </svg>
-          </button>
-          <button class="icon-btn btn-delete" onclick="del(${index})" title="${disableEditDelete ? 'ID kosong di sheet' : 'Delete'}" aria-label="Delete" ${disableEditDelete ? "disabled" : ""}>
-            <svg viewBox="0 0 24 24">
-              <path d="M3 6h18"></path>
-              <path d="M8 6V4h8v2"></path>
-              <path d="M19 6l-1 14H6L5 6"></path>
-              <path d="M10 11v6"></path>
-              <path d="M14 11v6"></path>
-            </svg>
-          </button>
+        <td>${bPriority(t.priority)}</td>
+        <td>${bStatus(t.status)}</td>
+        <td>
+          <div class="acts">
+            <button class="icon-btn ib-view" onclick="showDetail(${idx})" title="Detail">
+              <svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+            <button class="icon-btn ib-edit" onclick="editTicket(${idx})" title="Edit" ${!t.ID ? "disabled" : ""}>
+              <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+            </button>
+            <button class="icon-btn ib-del" onclick="delTicket(${idx})" title="Hapus" ${!t.ID ? "disabled" : ""}>
+              <svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>
+            </button>
+          </div>
         </td>
-      </tr>
-      `;
-    });
+      </tr>`;
+    }).join("");
   }
 
   updateStats();
 }
 
-async function loadTickets() {
+async function callScript(payload) {
+  const action = payload.action || "get";
+  let res;
+
+  if (action === "get") {
+    const url = SCRIPT_URL + "?action=get&t=" + Date.now();
+    res = await fetch(url, { redirect: "follow" });
+  } else {
+    res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify(payload),
+      redirect: "follow"
+    });
+  }
+
+  const text = await res.text();
   try {
-    tableData.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#64748b;padding:20px;">Memuat data...</td></tr>';
-    const res = await fetch(`${API_URL}?t=${Date.now()}`);
-    if (!res.ok) throw new Error("Gagal mengambil data");
-    const data = await res.json();
-    tickets = Array.isArray(data) ? data.map(normalizeTicket) : [];
+    return JSON.parse(text);
+  } catch {
+    throw new Error("Response bukan JSON: " + text.slice(0, 150));
+  }
+}
+
+async function loadTickets() {
+  document.getElementById("syncBtn").classList.add("spinning");
+  tableBody.innerHTML = `<tr><td class="loading-td" colspan="9"><div class="spinner"></div>Memuat data dari Google Sheets...</td></tr>`;
+
+  try {
+    const json = await callScript({ action: "get" });
+    if (!json.success) throw new Error(json.error || "Gagal ambil data");
+
+    tickets = (json.data || []).map(norm);
     render();
-  } catch (error) {
-    console.error(error);
-    tickets = [];
-    render("Gagal memuat data dari Google Sheet");
-    showToast("Gagal memuat data", "error");
+    showToast(`${tickets.length} tiket dimuat`, "info");
+  } catch (err) {
+    console.error(err);
+    tableBody.innerHTML = `<tr><td class="loading-td" colspan="9">⚠ Gagal memuat: ${err.message}</td></tr>`;
+    showToast("Gagal memuat: " + err.message, "error");
+  } finally {
+    document.getElementById("syncBtn").classList.remove("spinning");
   }
 }
 
-async function requestApi(payload) {
-  const res = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "text/plain;charset=utf-8"
-    },
-    body: JSON.stringify(payload)
-  });
-
-  if (!res.ok) {
-    throw new Error("Request gagal");
-  }
-
-  return await res.json();
-}
-
-async function handleSubmit(e) {
+form.addEventListener("submit", async function(e) {
   e.preventDefault();
-  if (isSubmitting) return;
+  if (busy) return;
 
   const data = {
-    Tanggal: tanggalEl.value,
-    NoTiket: noTiketEl.value.trim(),
-    Keluhan: keluhanEl.value.trim(),
-    Sistem: sistemEl.value,
-    Penyelesaian: penyelesaianEl.value.trim(),
-    PIC: picEl.value.trim(),
-    Priority: priorityEl.value,
-    Status: statusEl.value
+    Tanggal:      document.getElementById("fTanggal").value,
+    NoTiket:      document.getElementById("fNoTiket").value.trim(),
+    Keluhan:      document.getElementById("fKeluhan").value.trim(),
+    Sistem:       document.getElementById("fSistemForm").value,
+    Penyelesaian: document.getElementById("fPenyelesaian").value.trim(),
+    PIC:          document.getElementById("fPic").value.trim(),
+    Priority:     document.getElementById("fPriority").value,
+    Status:       fStatusFormEl.value,
   };
 
   if (!data.Tanggal || !data.NoTiket || !data.Keluhan || !data.PIC) {
-    alert("Mohon lengkapi data wajib terlebih dahulu.");
+    showToast("Lengkapi field yang wajib diisi!", "error");
     return;
   }
+
+  busy = true;
+  submitBtn.disabled = true;
+  const origHTML = submitBtn.innerHTML;
+  submitBtn.innerHTML = `<svg style="animation:spin .7s linear infinite" viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Menyimpan...`;
 
   try {
-    setSubmitLoading(true);
+    const payload = editID
+      ? { action: "update", ID: editID, ...data }
+      : { action: "create", ...data };
 
-    let result;
-    if (editIndex === -1) {
-      result = await requestApi({
-        action: "create",
-        ...data
-      });
-      if (!result.success) throw new Error(result.message || "Gagal menyimpan tiket");
-      showToast("Tiket berhasil disimpan", "success");
-    } else {
-      const id = tickets[editIndex]?.ID;
-      if (!id) throw new Error("ID tiket kosong. Isi kolom ID di Google Sheet dulu.");
+    const result = await callScript(payload);
+    if (!result.success) throw new Error(result.error || "Gagal simpan");
 
-      result = await requestApi({
-        action: "update",
-        ID: id,
-        ...data
-      });
-      if (!result.success) throw new Error(result.message || "Gagal update tiket");
-      showToast("Tiket berhasil diupdate", "edit");
-    }
-
+    showToast(editID ? "Tiket berhasil diupdate!" : "Tiket berhasil disimpan!", editID ? "edit" : "success");
     resetForm();
     await loadTickets();
-  } catch (error) {
-    console.error(error);
-    showToast(error.message || "Terjadi kesalahan", "error");
+    showPage("dashboard");
+  } catch (err) {
+    showToast(err.message, "error");
   } finally {
-    setSubmitLoading(false, editIndex === -1 ? "Simpan Tiket" : "Update Tiket");
+    busy = false;
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = origHTML;
   }
+});
+
+function resetForm() {
+  form.reset();
+  editID = null;
+  document.getElementById("fTanggal").value = getTodayLocal();
+  document.getElementById("fSistemForm").value = "ND6";
+  document.getElementById("fPriority").value = "Low";
+  fStatusFormEl.value = "On Checking";
+  submitBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Simpan Tiket`;
 }
 
-function edit(i) {
+function resetFilters() {
+  searchEl.value = "";
+  fSistemEl.value = "";
+  fStatusFilterEl.value = "";
+  render();
+  showToast("Filter direset", "info");
+}
+
+function editTicket(i) {
   const t = tickets[i];
   if (!t.ID) {
-    showToast("ID tiket kosong. Isi kolom ID di Google Sheet dulu.", "error");
+    showToast("ID tiket kosong!", "error");
     return;
   }
 
-  tanggalEl.value = t.tanggal || "";
-  noTiketEl.value = t.notiket || "";
-  keluhanEl.value = t.keluhan || "";
-  sistemEl.value = t.sistem || "ND6";
-  penyelesaianEl.value = t.penyelesaian || "";
-  picEl.value = t.pic || "";
-  priorityEl.value = t.priority || "Low";
-  statusEl.value = t.status || "On Checking";
+  editID = t.ID;
+  document.getElementById("fTanggal").value      = t.tanggal || "";
+  document.getElementById("fNoTiket").value      = t.notiket || "";
+  document.getElementById("fKeluhan").value      = t.keluhan || "";
+  document.getElementById("fSistemForm").value   = t.sistem || "ND6";
+  document.getElementById("fPenyelesaian").value = t.penyelesaian || "";
+  document.getElementById("fPic").value          = t.pic || "";
+  document.getElementById("fPriority").value     = t.priority || "Low";
+  fStatusFormEl.value = t.status || "On Checking";
 
-  editIndex = i;
-  submitBtn.textContent = "Update Tiket";
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  document.getElementById("formTitle").textContent = "Edit Tiket";
+  document.getElementById("formSubtitle").textContent = `Mengedit: ${t.notiket}`;
+  submitBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Update Tiket`;
+  showPage("tambah");
+}
+
+async function delTicket(i) {
+  const t = tickets[i];
+  if (!t.ID) {
+    showToast("ID tiket kosong!", "error");
+    return;
+  }
+
+  if (!confirm(`Hapus tiket "${t.notiket}"?\nAksi ini tidak bisa dibatalkan.`)) return;
+
+  try {
+    const result = await callScript({ action: "delete", ID: t.ID });
+    if (!result.success) throw new Error(result.error || "Gagal hapus");
+    showToast("Tiket berhasil dihapus", "delete");
+    await loadTickets();
+  } catch (err) {
+    showToast(err.message, "error");
+  }
 }
 
 function showDetail(i) {
   const t = tickets[i];
-  document.getElementById("detailNoTiket").textContent = t.notiket || "-";
-  document.getElementById("detailTanggal").textContent = formatDate(t.tanggal);
-  document.getElementById("detailSistemWrap").innerHTML = badgeSistem(t.sistem || "ND6");
-  document.getElementById("detailPic").textContent = t.pic || "-";
-  document.getElementById("detailPriorityWrap").innerHTML = badgePriority(t.priority || "Low");
-  document.getElementById("detailStatusWrap").innerHTML = badgeStatus(t.status || "On Checking");
-  document.getElementById("detailKeluhan").textContent = t.keluhan || "-";
-  document.getElementById("detailPenyelesaian").textContent = t.penyelesaian || "-";
+  document.getElementById("dNoTiket").textContent = t.notiket || "-";
+  document.getElementById("dTanggal").textContent = fmtDate(t.tanggal);
+  document.getElementById("dSistem").innerHTML = bSistem(t.sistem);
+  document.getElementById("dPic").textContent = t.pic || "-";
+  document.getElementById("dPriority").innerHTML = bPriority(t.priority);
+  document.getElementById("dStatus").innerHTML = bStatus(t.status);
+  document.getElementById("dKeluhan").textContent = t.keluhan || "-";
+  document.getElementById("dPenyelesaian").textContent = t.penyelesaian || "-";
   document.getElementById("detailModal").classList.add("show");
 }
 
-function closeDetail() {
+function closeModal() {
   document.getElementById("detailModal").classList.remove("show");
 }
 
-async function del(i) {
-  const ticket = tickets[i];
-  if (!ticket || !ticket.ID) {
-    showToast("ID tiket kosong. Isi kolom ID di Google Sheet dulu.", "error");
+function buildCharts() {
+  const P = ["#1a56db","#0284c7","#f59e0b","#16a34a","#ef4444","#8b5cf6"];
+
+  const opts = (type) => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: {
+          font: { family: "Plus Jakarta Sans", size: 12 },
+          padding: 14,
+          usePointStyle: true
+        }
+      }
+    },
+    scales: type === "bar" ? {
+      y: {
+        beginAtZero: true,
+        ticks: { stepSize: 1, font: { family: "Plus Jakarta Sans" } },
+        grid: { color: "#f1f5fb" }
+      },
+      x: {
+        grid: { display: false },
+        ticks: { font: { family: "Plus Jakarta Sans" } }
+      }
+    } : {}
+  });
+
+  function mk(id, type, labels, data, colors) {
+    if (chartInst[id]) chartInst[id].destroy();
+    chartInst[id] = new Chart(document.getElementById(id).getContext("2d"), {
+      type,
+      data: {
+        labels,
+        datasets: [{
+          data,
+          backgroundColor: colors,
+          borderRadius: type === "bar" ? 7 : 0,
+          borderWidth: 0
+        }]
+      },
+      options: opts(type)
+    });
+  }
+
+  const st = s => tickets.filter(t => t.status === s).length;
+  const pr = p => tickets.filter(t => t.priority === p).length;
+  const sys = s => tickets.filter(t => t.sistem === s).length;
+
+  mk("cStatus", "doughnut",
+    ["On Checking", "On Process", "DONE"],
+    [st("On Checking"), st("On Process"), st("DONE")],
+    [P[0], P[2], P[3]]
+  );
+
+  mk("cPriority", "doughnut",
+    ["Low", "Medium", "High"],
+    [pr("Low"), pr("Medium"), pr("High")],
+    [P[3], P[2], P[4]]
+  );
+
+  mk("cSistem", "bar",
+    ["ND6", "DMS"],
+    [sys("ND6"), sys("DMS")],
+    [P[0], P[5]]
+  );
+
+  const mc = {};
+  tickets.forEach(t => {
+    if (!t.tanggal) return;
+    const [y, m] = t.tanggal.split("-");
+    const k = `${y}-${m}`;
+    mc[k] = (mc[k] || 0) + 1;
+  });
+
+  const sortedM = Object.keys(mc).sort();
+  mk("cBulan", "bar",
+    sortedM.map(k => {
+      const [y, m] = k.split("-");
+      return `${m}/${y}`;
+    }),
+    sortedM.map(k => mc[k]),
+    sortedM.map((_, i) => `hsl(${210 + i * 25},68%,55%)`)
+  );
+}
+
+function exportExcel() {
+  if (!tickets.length) {
+    showToast("Tidak ada data", "info");
     return;
   }
 
-  if (confirm("Hapus tiket?")) {
-    try {
-      const result = await requestApi({
-        action: "delete",
-        ID: ticket.ID
-      });
+  const rows = [["ID","Tanggal","No Tiket","Keluhan","Sistem","Penyelesaian","PIC","Priority","Status"]];
+  tickets.forEach(t => rows.push([
+    t.ID,
+    fmtDate(t.tanggal),
+    t.notiket,
+    t.keluhan,
+    t.sistem,
+    t.penyelesaian,
+    t.pic,
+    t.priority,
+    t.status
+  ]));
 
-      if (!result.success) throw new Error(result.message || "Gagal hapus tiket");
-
-      if (editIndex === i) resetForm();
-      showToast("Tiket berhasil dihapus", "delete");
-      await loadTickets();
-    } catch (error) {
-      console.error(error);
-      showToast(error.message || "Gagal menghapus tiket", "error");
-    }
-  }
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws["!cols"] = [12,12,16,40,8,40,16,10,14].map(w => ({ wch: w }));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Tiket");
+  XLSX.writeFile(wb, `ticket-monitoring-${getTodayLocal()}.xlsx`);
+  showToast("Excel berhasil diunduh!", "success");
 }
 
-ticketForm.addEventListener("submit", handleSubmit);
-
-document.getElementById("detailModal").addEventListener("click", function(e){
-  if(e.target === this){
-    closeDetail();
+function exportCSV() {
+  if (!tickets.length) {
+    showToast("Tidak ada data", "info");
+    return;
   }
+
+  const esc = v => `"${String(v || "").replace(/"/g,'""')}"`;
+  const lines = [["ID","Tanggal","No Tiket","Keluhan","Sistem","Penyelesaian","PIC","Priority","Status"].map(esc).join(",")];
+
+  tickets.forEach(t => {
+    lines.push([
+      t.ID,
+      fmtDate(t.tanggal),
+      t.notiket,
+      t.keluhan,
+      t.sistem,
+      t.penyelesaian,
+      t.pic,
+      t.priority,
+      t.status
+    ].map(esc).join(","));
+  });
+
+  const blob = new Blob([lines.join("\r\n")], { type:"text/csv;charset=utf-8;" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `ticket-monitoring-${getTodayLocal()}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+
+  showToast("CSV berhasil diunduh!", "success");
+}
+
+searchEl.addEventListener("input", render);
+fSistemEl.addEventListener("change", render);
+fStatusFilterEl.addEventListener("change", render);
+document.getElementById("detailModal").addEventListener("click", e => {
+  if (e.target === e.currentTarget) closeModal();
 });
-
-document.addEventListener("keydown", function(e){
-  if(e.key === "Escape"){
-    closeDetail();
-  }
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") closeModal();
 });
-
-searchInput.addEventListener("input", render);
-filterSistemEl.addEventListener("change", render);
-filterStatusEl.addEventListener("change", render);
-
-loadTickets();
 </script>
-
 </body>
 </html>
-
-
-
