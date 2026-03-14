@@ -3,113 +3,117 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ticket Monitoring View</title>
+<title>Ticket Monitoring - View</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <style>
-
 body{
 font-family:'Plus Jakarta Sans',sans-serif;
-background:#f1f5f9;
+background:#f4f7fb;
 margin:0;
 padding:30px;
 }
 
-.container{
-max-width:1200px;
-margin:auto;
-}
-
 h1{
 font-size:26px;
-margin-bottom:20px;
+font-weight:800;
+margin-bottom:5px;
+}
+
+p{
+color:#64748b;
+margin-bottom:25px;
+}
+
+.card{
+background:#fff;
+border-radius:12px;
+padding:20px;
+box-shadow:0 3px 14px rgba(0,0,0,0.06);
 }
 
 table{
 width:100%;
 border-collapse:collapse;
-background:white;
-border-radius:10px;
-overflow:hidden;
 }
 
 th{
-background:#1a56db;
-color:white;
-padding:12px;
-font-size:13px;
-text-align:left;
+background:#eef4ff;
+padding:10px;
+font-size:12px;
+text-transform:uppercase;
 }
 
 td{
-padding:10px 12px;
-border-bottom:1px solid #eee;
+padding:10px;
+border-bottom:1px solid #eef2f7;
 font-size:13px;
 }
 
-tr:hover{
-background:#f8fafc;
-}
-
-.badge{
-padding:4px 10px;
-border-radius:20px;
-font-size:11px;
+button{
+padding:6px 12px;
+border-radius:8px;
+border:none;
+cursor:pointer;
+background:#4f46e5;
+color:white;
 font-weight:600;
 }
 
-.done{background:#dcfce7;color:#166534;}
-.process{background:#fef3c7;color:#92400e;}
-.check{background:#dbeafe;color:#1e40af;}
-
-.toolbar{
-display:flex;
-gap:10px;
-margin-bottom:15px;
+.badge{
+padding:4px 8px;
+border-radius:20px;
+font-size:11px;
+font-weight:700;
 }
 
-input,select{
-padding:8px 10px;
-border-radius:6px;
-border:1px solid #ccc;
+.low{background:#dcfce7;color:#166534}
+.medium{background:#fef3c7;color:#92400e}
+.high{background:#fee2e2;color:#991b1b}
+
+.check{background:#e0f2fe;color:#075985}
+.process{background:#fef3c7;color:#92400e}
+.done{background:#dcfce7;color:#166534}
+
+.modal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.45);
+display:none;
+align-items:center;
+justify-content:center;
 }
 
+.modal-content{
+background:white;
+padding:25px;
+border-radius:12px;
+width:450px;
+}
+
+.modal.show{display:flex}
 </style>
 </head>
 
 <body>
 
-<div class="container">
-
 <h1>Ticket Monitoring</h1>
+<p>Dashboard monitoring tiket ND6 & DMS</p>
 
-<div class="toolbar">
-
-<input id="search" placeholder="Cari tiket...">
-
-<select id="filterSistem">
-<option value="">Semua Sistem</option>
-<option>ND6</option>
-<option>DMS</option>
-</select>
-
-<select id="filterStatus">
-<option value="">Semua Status</option>
-<option>On Checking</option>
-<option>On Process</option>
-<option>DONE</option>
-</select>
-
-<button onclick="loadData()">Refresh</button>
-
-</div>
+<div class="card">
 
 <table>
-
 <thead>
 <tr>
-<th>No</th>
+<th>#</th>
 <th>Tanggal</th>
 <th>No Tiket</th>
 <th>Keluhan</th>
@@ -117,93 +121,142 @@ border:1px solid #ccc;
 <th>PIC</th>
 <th>Priority</th>
 <th>Status</th>
+<th>Aksi</th>
 </tr>
 </thead>
 
-<tbody id="tbody">
-<tr><td colspan="8">Loading...</td></tr>
+<tbody id="tableBody">
+<tr>
+<td colspan="9">Loading data...</td>
+</tr>
 </tbody>
 
 </table>
 
 </div>
 
+<div class="modal" id="modal">
+<div class="modal-content">
+
+<h3>Detail Tiket</h3>
+<br>
+
+<p><b>No Tiket:</b> <span id="dNo"></span></p>
+<p><b>Tanggal:</b> <span id="dTgl"></span></p>
+<p><b>Sistem:</b> <span id="dSys"></span></p>
+<p><b>PIC:</b> <span id="dPic"></span></p>
+<p><b>Priority:</b> <span id="dPr"></span></p>
+<p><b>Status:</b> <span id="dSt"></span></p>
+
+<br>
+
+<p><b>Keluhan</b></p>
+<p id="dKel"></p>
+
+<br>
+
+<p><b>Penyelesaian</b></p>
+<p id="dSol"></p>
+
+<br>
+
+<button onclick="closeModal()">Tutup</button>
+
+</div>
+</div>
+
 <script>
 
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzhUphV8wXyUdU929zlxsJDF8U6kdr_Lw2KIzUTEiFnda5_Nxlj0VgQnIBFm2qhDbJo/exec";
+const API="https://script.google.com/macros/s/AKfycbzhUphV8wXyUdU929zlxsJDF8U6kdr_Lw2KIzUTEiFnda5_Nxlj0VgQnIBFm2qhDbJo/exec"
 
-let data=[];
+let tickets=[]
 
-async function loadData(){
+function badgePriority(p){
 
-const res=await fetch(SCRIPT_URL+"?action=get&t="+Date.now());
-const json=await res.json();
+if(p==="High") return '<span class="badge high">High</span>'
+if(p==="Medium") return '<span class="badge medium">Medium</span>'
+return '<span class="badge low">Low</span>'
 
-data=json.data||[];
+}
 
-render();
+function badgeStatus(s){
+
+if(s==="DONE") return '<span class="badge done">DONE</span>'
+if(s==="On Process") return '<span class="badge process">On Process</span>'
+return '<span class="badge check">On Checking</span>'
 
 }
 
 function render(){
 
-const q=document.getElementById("search").value.toLowerCase();
-const sistem=document.getElementById("filterSistem").value;
-const status=document.getElementById("filterStatus").value;
+const tb=document.getElementById("tableBody")
 
-const filtered=data.filter(t=>
-
-(!q || (t.NoTiket||"").toLowerCase().includes(q) || (t.Keluhan||"").toLowerCase().includes(q)) &&
-(!sistem || t.Sistem===sistem) &&
-(!status || t.Status===status)
-
-);
-
-const tbody=document.getElementById("tbody");
-
-if(!filtered.length){
-
-tbody.innerHTML=`<tr><td colspan="8">Tidak ada data</td></tr>`;
-return;
-
-}
-
-tbody.innerHTML=filtered.map((t,i)=>{
-
-const badge=
-
-t.Status==="DONE"
-?'<span class="badge done">DONE</span>'
-:t.Status==="On Process"
-?'<span class="badge process">On Process</span>'
-:'<span class="badge check">On Checking</span>';
-
-return `
+tb.innerHTML=tickets.map((t,i)=>`
 
 <tr>
 
 <td>${i+1}</td>
-<td>${t.Tanggal||""}</td>
-<td>${t.NoTiket||""}</td>
-<td>${t.Keluhan||""}</td>
-<td>${t.Sistem||""}</td>
-<td>${t.PIC||""}</td>
-<td>${t.Priority||""}</td>
-<td>${badge}</td>
+
+<td>${t.tanggal}</td>
+
+<td><b>${t.notiket}</b></td>
+
+<td>${t.keluhan}</td>
+
+<td>${t.sistem}</td>
+
+<td>${t.pic}</td>
+
+<td>${badgePriority(t.priority)}</td>
+
+<td>${badgeStatus(t.status)}</td>
+
+<td>
+<button onclick="detail(${i})">Detail</button>
+</td>
 
 </tr>
 
-`;
-
-}).join("");
+`).join("")
 
 }
 
-document.getElementById("search").addEventListener("input",render);
-document.getElementById("filterSistem").addEventListener("change",render);
-document.getElementById("filterStatus").addEventListener("change",render);
+function detail(i){
 
-loadData();
+const t=tickets[i]
+
+document.getElementById("dNo").textContent=t.notiket
+document.getElementById("dTgl").textContent=t.tanggal
+document.getElementById("dSys").textContent=t.sistem
+document.getElementById("dPic").textContent=t.pic
+document.getElementById("dPr").textContent=t.priority
+document.getElementById("dSt").textContent=t.status
+document.getElementById("dKel").textContent=t.keluhan
+document.getElementById("dSol").textContent=t.penyelesaian
+
+document.getElementById("modal").classList.add("show")
+
+}
+
+function closeModal(){
+
+document.getElementById("modal").classList.remove("show")
+
+}
+
+async function load(){
+
+const res=await fetch(API+"?action=get")
+
+const json=await res.json()
+
+tickets=json.data
+
+render()
+
+}
+
+load()
 
 </script>
 
