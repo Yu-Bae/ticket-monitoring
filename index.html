@@ -215,7 +215,7 @@
     .btn-ghost:hover:not(:disabled) { border-color: #94a3b8; color: var(--text); background: #f1f5f9; }
     .btn-sm { padding: 7px 12px; font-size: 12px; }
 
-    .toolbar { display: grid; grid-template-columns: 1fr 160px 190px 160px auto auto auto; gap: 9px; margin-bottom: 14px; align-items: end; }
+    .toolbar { display: grid; grid-template-columns: 1fr 160px 190px auto auto auto; gap: 9px; margin-bottom: 14px; align-items: end; }
     .tb-group { display: flex; flex-direction: column; gap: 4px; }
     .tb-label { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: .3px; text-transform: uppercase; }
     .search-wrap { position: relative; }
@@ -975,16 +975,6 @@
             </div>
 
             <div class="tb-group">
-              <div class="tb-label">Urutkan</div>
-              <select id="fSort">
-                <option value="newest">Tanggal Terbaru</option>
-                <option value="oldest">Tanggal Terlama</option>
-                <option value="ticket-asc">No Tiket A-Z</option>
-                <option value="ticket-desc">No Tiket Z-A</option>
-              </select>
-            </div>
-
-            <div class="tb-group">
               <div class="tb-label" style="opacity:0">x</div>
               <button class="btn btn-secondary btn-sm" onclick="resetFilters()">Reset</button>
             </div>
@@ -1203,7 +1193,6 @@ let toastTmr = null;
 const tableBody       = document.getElementById("tableBody");
 const searchEl        = document.getElementById("search");
 const fSistemEl       = document.getElementById("fSistem");
-const fSortEl         = document.getElementById("fSort");
 const fStatusFormEl   = document.getElementById("fStatusForm");
 const toastEl         = document.getElementById("toast");
 const submitBtn       = document.getElementById("submitBtn");
@@ -1251,6 +1240,18 @@ function getSelectedStatuses() {
   return statusChecks()
     .filter(ch => ch.checked)
     .map(ch => ch.value);
+}
+
+function getFilteredTickets() {
+  const q = searchEl.value.toLowerCase();
+  const fs = fSistemEl.value;
+  const selectedStatuses = getSelectedStatuses();
+
+  return tickets.filter(t =>
+    (!q || [t.notiket, t.keluhan, t.pic].some(v => (v || "").toLowerCase().includes(q))) &&
+    (!fs || t.sistem === fs) &&
+    (!selectedStatuses.length || selectedStatuses.includes(t.status))
+  );
 }
 
 function updateStatusButtonLabel() {
@@ -1326,12 +1327,6 @@ function fmtDate(s) {
   return s || "-";
 }
 
-function getDateValue(s) {
-  const d = toInput(s);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return 0;
-  return new Date(d + "T00:00:00").getTime();
-}
-
 function escapeHtml(value) {
   return String(value || "")
     .replace(/&/g, "&amp;")
@@ -1385,37 +1380,6 @@ function updateStats() {
   document.getElementById("sDone").textContent     = tickets.filter(t => t.status === "DONE").length;
 }
 
-function getFilteredTickets() {
-  const q = searchEl.value.toLowerCase();
-  const fs = fSistemEl.value;
-  const selectedStatuses = getSelectedStatuses();
-  const sortBy = fSortEl.value;
-
-  const filtered = tickets.filter(t =>
-    (!q || [t.notiket, t.keluhan, t.pic].some(v => (v || "").toLowerCase().includes(q))) &&
-    (!fs || t.sistem === fs) &&
-    (!selectedStatuses.length || selectedStatuses.includes(t.status))
-  );
-
-  filtered.sort((a, b) => {
-    if (sortBy === "oldest") {
-      return getDateValue(a.tanggal) - getDateValue(b.tanggal);
-    }
-
-    if (sortBy === "ticket-asc") {
-      return (a.notiket || "").localeCompare((b.notiket || ""), "id", { sensitivity: "base" });
-    }
-
-    if (sortBy === "ticket-desc") {
-      return (b.notiket || "").localeCompare((a.notiket || ""), "id", { sensitivity: "base" });
-    }
-
-    return getDateValue(b.tanggal) - getDateValue(a.tanggal);
-  });
-
-  return filtered;
-}
-
 function render() {
   const filtered = getFilteredTickets();
 
@@ -1463,14 +1427,6 @@ function buildShareReportHtml(filtered) {
   const selectedStatuses = getSelectedStatuses();
   const selectedSystem = fSistemEl.value;
   const searchValue = searchEl.value.trim();
-  const sortBy = fSortEl.value;
-
-  const sortLabelMap = {
-    newest: "Tanggal Terbaru",
-    oldest: "Tanggal Terlama",
-    "ticket-asc": "No Tiket A-Z",
-    "ticket-desc": "No Tiket Z-A"
-  };
 
   const countChecking = filtered.filter(t => t.status === "On Checking").length;
   const countProcess = filtered.filter(t => t.status === "On Process").length;
@@ -1481,7 +1437,6 @@ function buildShareReportHtml(filtered) {
   chips.push(`<span class="report-chip">Total ditampilkan: ${filtered.length} tiket</span>`);
   chips.push(`<span class="report-chip">Sistem: ${escapeHtml(selectedSystem || "Semua")}</span>`);
   chips.push(`<span class="report-chip">Status: ${escapeHtml(selectedStatuses.length ? selectedStatuses.join(", ") : "Semua")}</span>`);
-  chips.push(`<span class="report-chip">Urutkan: ${escapeHtml(sortLabelMap[sortBy] || "Tanggal Terbaru")}</span>`);
   if (searchValue) chips.push(`<span class="report-chip">Cari: ${escapeHtml(searchValue)}</span>`);
 
   const rows = filtered.length
@@ -1599,18 +1554,11 @@ async function copyActiveSummary() {
   const selectedStatuses = getSelectedStatuses();
   const selectedSystem = fSistemEl.value || "Semua";
   const searchValue = searchEl.value.trim();
-  const sortLabelMap = {
-    newest: "Tanggal Terbaru",
-    oldest: "Tanggal Terlama",
-    "ticket-asc": "No Tiket A-Z",
-    "ticket-desc": "No Tiket Z-A"
-  };
 
   let summary = `Laporan Tiket\n`;
   summary += `Tanggal: ${formatDateTimeNow()}\n`;
   summary += `Sistem: ${selectedSystem}\n`;
   summary += `Status: ${selectedStatuses.length ? selectedStatuses.join(", ") : "Semua"}\n`;
-  summary += `Urutkan: ${sortLabelMap[fSortEl.value] || "Tanggal Terbaru"}\n`;
   if (searchValue) summary += `Cari: ${searchValue}\n`;
   summary += `Total: ${filtered.length} tiket\n\n`;
 
@@ -1733,7 +1681,6 @@ function resetForm() {
 function resetFilters() {
   searchEl.value = "";
   fSistemEl.value = "";
-  fSortEl.value = "newest";
   statusChecks().forEach(ch => ch.checked = false);
   updateStatusButtonLabel();
   closeStatusDropdown();
@@ -1949,7 +1896,6 @@ function exportCSV() {
 
 searchEl.addEventListener("input", render);
 fSistemEl.addEventListener("change", render);
-fSortEl.addEventListener("change", render);
 
 statusChecks().forEach(ch => {
   ch.addEventListener("change", () => {
