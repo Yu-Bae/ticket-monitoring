@@ -403,7 +403,7 @@
     }
 
     .share-shell {
-      width: min(1180px, 100%);
+      width: min(1300px, 100%);
       margin: 0 auto;
       background: #fff;
       border-radius: 20px;
@@ -555,111 +555,78 @@
     .report-stat.amber strong { color: #d97706; }
     .report-stat.green strong { color: #16a34a; }
 
-    .report-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
-
-    .report-ticket {
-      background: #fff;
+    .share-table-wrap {
+      overflow: auto;
       border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 16px;
+      border-radius: 16px;
+      background: #fff;
       box-shadow: var(--shadow);
-      break-inside: avoid;
-      page-break-inside: avoid;
     }
 
-    .report-ticket-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 10px;
-      margin-bottom: 12px;
+    .share-report-table {
+      width: 100%;
+      min-width: 1350px;
+      border-collapse: collapse;
     }
 
-    .report-ticket-code {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .report-ticket-date {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-
-    .report-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      justify-content: flex-end;
-    }
-
-    .report-info {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .report-info-box {
-      background: #f8fafc;
-      border: 1px solid #edf2f7;
-      border-radius: 12px;
-      padding: 10px 12px;
-    }
-
-    .report-info-box small {
-      display: block;
-      font-size: 10px;
-      color: var(--muted);
-      font-weight: 700;
-      letter-spacing: .6px;
+    .share-report-table thead th {
+      background: #eef4ff;
+      color: #274c8f;
+      font-size: 10.5px;
+      font-weight: 800;
       text-transform: uppercase;
-      margin-bottom: 3px;
-    }
-
-    .report-info-box div {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text);
-      word-break: break-word;
-    }
-
-    .report-desc {
-      border: 1px solid #edf2f7;
-      border-radius: 12px;
-      background: #fcfdff;
-      padding: 12px 13px;
-      margin-bottom: 10px;
-    }
-
-    .report-desc:last-child {
-      margin-bottom: 0;
-    }
-
-    .report-desc h4 {
-      font-size: 10px;
-      color: var(--muted);
-      font-weight: 700;
       letter-spacing: .7px;
-      text-transform: uppercase;
-      margin-bottom: 5px;
+      padding: 12px 12px;
+      border-bottom: 1.5px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+      position: sticky;
+      top: 0;
+      z-index: 1;
     }
 
-    .report-desc p {
+    .share-report-table tbody td {
+      padding: 12px;
+      border-bottom: 1px solid #edf2f7;
       font-size: 13px;
-      line-height: 1.6;
-      color: var(--text);
-      white-space: pre-wrap;
-      word-break: break-word;
+      vertical-align: top;
+      background: #fff;
     }
 
-    .report-empty {
+    .share-report-table tbody tr:nth-child(even) td {
+      background: #fbfdff;
+    }
+
+    .share-report-table tbody tr:hover td {
+      background: #f5f9ff;
+    }
+
+    .share-report-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .share-no {
+      width: 54px;
+      text-align: center;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .share-ticket-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .share-longtext {
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.65;
+      min-width: 260px;
+    }
+
+    .share-report-empty {
       padding: 60px 20px;
       text-align: center;
       background: #fff;
@@ -667,13 +634,13 @@
       border-radius: 18px;
     }
 
-    .report-empty h3 {
+    .share-report-empty h3 {
       font-size: 18px;
       color: #64748b;
       margin-bottom: 6px;
     }
 
-    .report-empty p {
+    .share-report-empty p {
       color: #94a3b8;
       font-size: 14px;
     }
@@ -718,7 +685,6 @@
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
       .charts-grid { grid-template-columns: 1fr; }
       .report-stats { grid-template-columns: repeat(2, 1fr); }
-      .report-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 860px) {
@@ -791,7 +757,6 @@
       .header-actions { width: 100%; }
       .report-meta { grid-template-columns: 1fr; }
       .report-stats { grid-template-columns: 1fr; }
-      .report-info { grid-template-columns: 1fr; }
       .share-topbar { flex-direction: column; align-items: stretch; }
       .share-topbar-actions { width: 100%; }
     }
@@ -832,13 +797,24 @@
         background: #fff !important;
       }
 
-      .report-grid {
-        grid-template-columns: 1fr 1fr !important;
+      .share-table-wrap {
+        overflow: visible !important;
+        border: none !important;
+        box-shadow: none !important;
       }
 
-      .report-ticket {
-        break-inside: avoid;
-        page-break-inside: avoid;
+      .share-report-table {
+        min-width: 100% !important;
+        table-layout: fixed;
+      }
+
+      .share-report-table th,
+      .share-report-table td {
+        font-size: 11px !important;
+      }
+
+      .share-longtext {
+        min-width: 0 !important;
       }
     }
   </style>
@@ -1169,7 +1145,7 @@
     <div class="share-topbar">
       <div class="share-topbar-left">
         <h2>Share View Tiket</h2>
-        <p>Tampilan siap screenshot, kirim, atau print ke PDF</p>
+        <p>Tampilan tabel siap screenshot, kirim, atau print ke PDF</p>
       </div>
       <div class="share-topbar-actions">
         <button class="btn btn-ghost btn-sm" onclick="copyActiveSummary()">
@@ -1450,57 +1426,27 @@ function buildShareReportHtml(filtered) {
   chips.push(`<span class="report-chip">Status: ${escapeHtml(selectedStatuses.length ? selectedStatuses.join(", ") : "Semua")}</span>`);
   if (searchValue) chips.push(`<span class="report-chip">Cari: ${escapeHtml(searchValue)}</span>`);
 
-  const cards = filtered.length
-    ? filtered.map(t => `
-      <div class="report-ticket">
-        <div class="report-ticket-top">
-          <div>
-            <div class="report-ticket-code">${escapeHtml(t.notiket || "-")}</div>
-            <div class="report-ticket-date">Tanggal: ${escapeHtml(fmtDate(t.tanggal))}</div>
-          </div>
-          <div class="report-badges">
-            ${bStatus(t.status)}
-            ${bPriority(t.priority)}
-            ${bSistem(t.sistem)}
-          </div>
-        </div>
-
-        <div class="report-info">
-          <div class="report-info-box">
-            <small>PIC</small>
-            <div>${escapeHtml(t.pic || "-")}</div>
-          </div>
-          <div class="report-info-box">
-            <small>Status Kerja</small>
-            <div>${escapeHtml(t.status || "-")}</div>
-          </div>
-        </div>
-
-        <div class="report-desc">
-          <h4>Keluhan / Penjelasan</h4>
-          <p>${escapeHtml(t.keluhan || "-")}</p>
-        </div>
-
-        ${(t.penyelesaian || "").trim() ? `
-          <div class="report-desc">
-            <h4>Penyelesaian</h4>
-            <p>${escapeHtml(t.penyelesaian)}</p>
-          </div>
-        ` : ""}
-      </div>
+  const rows = filtered.length
+    ? filtered.map((t, i) => `
+      <tr>
+        <td class="share-no">${i + 1}</td>
+        <td class="date-cell">${escapeHtml(fmtDate(t.tanggal))}</td>
+        <td><span class="share-ticket-code">${escapeHtml(t.notiket || "-")}</span></td>
+        <td>${bSistem(t.sistem)}</td>
+        <td>${escapeHtml(t.pic || "-")}</td>
+        <td>${bPriority(t.priority)}</td>
+        <td>${bStatus(t.status)}</td>
+        <td class="share-longtext">${escapeHtml(t.keluhan || "-")}</td>
+        <td class="share-longtext">${escapeHtml((t.penyelesaian || "").trim() || "-")}</td>
+      </tr>
     `).join("")
-    : `
-      <div class="report-empty">
-        <h3>Tidak ada tiket pada filter ini</h3>
-        <p>Ubah filter lalu generate kembali share view.</p>
-      </div>
-    `;
+    : "";
 
   return `
     <div class="report-header">
       <div class="report-title">
         <h1>Laporan Tiket Aktif / Filter</h1>
-        <p>Tampilan ini dibuat khusus untuk screenshot, kirim ke chat, atau print PDF.</p>
+        <p>Tampilan tabel ini dibuat khusus untuk screenshot, kirim ke chat, atau print PDF.</p>
       </div>
 
       <div class="report-meta">
@@ -1538,9 +1484,37 @@ function buildShareReportHtml(filtered) {
       </div>
     </div>
 
-    <div class="report-grid">
-      ${cards}
-    </div>
+    ${
+      filtered.length
+        ? `
+          <div class="share-table-wrap">
+            <table class="share-report-table">
+              <thead>
+                <tr>
+                  <th style="width:60px">#</th>
+                  <th style="width:120px">Tanggal</th>
+                  <th style="width:170px">No Tiket</th>
+                  <th style="width:100px">Sistem</th>
+                  <th style="width:150px">PIC</th>
+                  <th style="width:110px">Priority</th>
+                  <th style="width:130px">Status</th>
+                  <th>Keluhan / Penjelasan</th>
+                  <th>Penyelesaian</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows}
+              </tbody>
+            </table>
+          </div>
+        `
+        : `
+          <div class="share-report-empty">
+            <h3>Tidak ada tiket pada filter ini</h3>
+            <p>Ubah filter lalu generate kembali share view.</p>
+          </div>
+        `
+    }
   `;
 }
 
