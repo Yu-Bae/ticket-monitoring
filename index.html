@@ -403,7 +403,7 @@
     }
 
     .share-shell {
-      width: min(1300px, 100%);
+      width: min(1280px, 100%);
       margin: 0 auto;
       background: #fff;
       border-radius: 20px;
@@ -556,7 +556,7 @@
     .report-stat.green strong { color: #16a34a; }
 
     .share-table-wrap {
-      overflow: auto;
+      overflow: visible;
       border: 1px solid var(--border);
       border-radius: 16px;
       background: #fff;
@@ -565,32 +565,36 @@
 
     .share-report-table {
       width: 100%;
-      min-width: 1350px;
+      min-width: 0;
       border-collapse: collapse;
+      table-layout: fixed;
     }
 
     .share-report-table thead th {
       background: #eef4ff;
       color: #274c8f;
-      font-size: 10.5px;
+      font-size: 10px;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: .7px;
-      padding: 12px 12px;
+      letter-spacing: .6px;
+      padding: 10px 8px;
       border-bottom: 1.5px solid var(--border);
       text-align: left;
       vertical-align: top;
-      position: sticky;
-      top: 0;
-      z-index: 1;
+      white-space: normal;
+      word-break: break-word;
+      position: static;
     }
 
     .share-report-table tbody td {
-      padding: 12px;
+      padding: 10px 8px;
       border-bottom: 1px solid #edf2f7;
-      font-size: 13px;
+      font-size: 12px;
       vertical-align: top;
       background: #fff;
+      white-space: normal;
+      word-break: break-word;
+      overflow-wrap: break-word;
     }
 
     .share-report-table tbody tr:nth-child(even) td {
@@ -606,7 +610,6 @@
     }
 
     .share-no {
-      width: 54px;
       text-align: center;
       color: var(--muted);
       font-weight: 700;
@@ -614,16 +617,18 @@
 
     .share-ticket-code {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
-      white-space: nowrap;
+      white-space: normal;
+      word-break: break-word;
     }
 
     .share-longtext {
       white-space: normal;
       word-break: break-word;
-      line-height: 1.65;
-      min-width: 260px;
+      overflow-wrap: break-word;
+      line-height: 1.5;
+      min-width: 0;
     }
 
     .share-report-empty {
@@ -804,17 +809,25 @@
       }
 
       .share-report-table {
-        min-width: 100% !important;
-        table-layout: fixed;
+        width: 100% !important;
+        min-width: 0 !important;
+        table-layout: fixed !important;
       }
 
       .share-report-table th,
       .share-report-table td {
-        font-size: 11px !important;
+        font-size: 10px !important;
+        padding: 6px 5px !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
       }
 
-      .share-longtext {
+      .share-longtext,
+      .share-ticket-code {
         min-width: 0 !important;
+        white-space: normal !important;
+        word-break: break-word !important;
       }
     }
   </style>
@@ -1491,15 +1504,15 @@ function buildShareReportHtml(filtered) {
             <table class="share-report-table">
               <thead>
                 <tr>
-                  <th style="width:60px">#</th>
-                  <th style="width:120px">Tanggal</th>
-                  <th style="width:170px">No Tiket</th>
-                  <th style="width:100px">Sistem</th>
-                  <th style="width:150px">PIC</th>
-                  <th style="width:110px">Priority</th>
-                  <th style="width:130px">Status</th>
-                  <th>Keluhan / Penjelasan</th>
-                  <th>Penyelesaian</th>
+                  <th style="width:4%">#</th>
+                  <th style="width:8%">Tanggal</th>
+                  <th style="width:10%">No Tiket</th>
+                  <th style="width:6%">Sistem</th>
+                  <th style="width:9%">PIC</th>
+                  <th style="width:7%">Priority</th>
+                  <th style="width:10%">Status</th>
+                  <th style="width:23%">Keluhan</th>
+                  <th style="width:23%">Penyelesaian</th>
                 </tr>
               </thead>
               <tbody>
