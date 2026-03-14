@@ -1182,7 +1182,7 @@
 <div id="toast"></div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwdNxdpWOT20p3w1cmHE3zD1CmgF1IzEl_cw7p1sZuVBoFc1fxxH2CJf96TU7DW90pk/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytTlAQBSWQLNJdqD0TfwYATq1FTxtw5b8j0xRBf1wlfZaj3SyX29RC1jTLQ0kLDbYcaw/exec";
 
 let tickets = [];
 let editID = null;
@@ -1579,26 +1579,40 @@ async function copyActiveSummary() {
 }
 
 async function callScript(payload) {
+
   const action = payload.action || "get";
-  let res;
+  let response;
 
   if (action === "get") {
+
     const url = SCRIPT_URL + "?action=get&t=" + Date.now();
-    res = await fetch(url, { redirect: "follow" });
+
+    response = await fetch(url, {
+      method: "GET",
+      redirect: "follow",
+      cache: "no-store"
+    });
+
   } else {
-    res = await fetch(SCRIPT_URL, {
+
+    response = await fetch(SCRIPT_URL, {
       method: "POST",
-      headers: { "Content-Type": "text/plain" },
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
       body: JSON.stringify(payload),
       redirect: "follow"
     });
+
   }
 
-  const text = await res.text();
+  const text = await response.text();
+
   try {
     return JSON.parse(text);
-  } catch {
-    throw new Error("Response bukan JSON: " + text.slice(0, 150));
+  } catch (err) {
+    console.error("Invalid JSON:", text);
+    throw new Error("Server response tidak valid");
   }
 }
 
