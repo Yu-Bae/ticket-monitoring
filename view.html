@@ -1698,24 +1698,6 @@ function editTicket(i) {
   showPage("tambah");
 }
 
-async function delTicket(i) {
-  const t = tickets[i];
-  if (!t.ID) {
-    showToast("ID tiket kosong!", "error");
-    return;
-  }
-
-  if (!confirm(`Hapus tiket "${t.notiket}"?\nAksi ini tidak bisa dibatalkan.`)) return;
-
-  try {
-    const result = await callScript({ action: "delete", ID: t.ID });
-    if (!result.success) throw new Error(result.error || "Gagal hapus");
-    showToast("Tiket berhasil dihapus", "delete");
-    await loadTickets();
-  } catch (err) {
-    showToast(err.message, "error");
-  }
-}
 
 function showDetail(i) {
   const t = tickets[i];
