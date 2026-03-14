@@ -1019,75 +1019,6 @@
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-head"><span class="card-title">Form Tiket</span></div>
-        <div class="card-body">
-          <form id="ticketForm">
-            <div class="form-grid">
-              <div>
-                <label for="fTanggal">Tanggal *</label>
-                <input type="date" id="fTanggal" required>
-              </div>
-
-              <div>
-                <label for="fNoTiket">No Tiket *</label>
-                <input type="text" id="fNoTiket" placeholder="INC-2024-001" required>
-              </div>
-
-              <div>
-                <label for="fSistemForm">Sistem</label>
-                <select id="fSistemForm">
-                  <option>ND6</option>
-                  <option>DMS</option>
-                </select>
-              </div>
-
-              <div>
-                <label for="fPic">PIC *</label>
-                <input type="text" id="fPic" placeholder="Nama PIC" required>
-              </div>
-
-              <div>
-                <label for="fPriority">Priority</label>
-                <select id="fPriority">
-                  <option>Low</option>
-                  <option>Medium</option>
-                  <option>High</option>
-                </select>
-              </div>
-
-              <div>
-                <label for="fStatusForm">Status</label>
-                <select id="fStatusForm">
-                  <option>On Checking</option>
-                  <option>On Process</option>
-                  <option>DONE</option>
-                </select>
-              </div>
-
-              <div class="field-full">
-                <label for="fKeluhan">Keluhan / Penjelasan *</label>
-                <textarea id="fKeluhan" placeholder="Deskripsi masalah..." required></textarea>
-              </div>
-
-              <div class="field-full">
-                <label for="fPenyelesaian">Penyelesaian</label>
-                <textarea id="fPenyelesaian" placeholder="Langkah penyelesaian..."></textarea>
-              </div>
-            </div>
-
-            <div class="form-actions">
-              <button type="submit" class="btn btn-primary" id="submitBtn">
-                <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                Simpan Tiket
-              </button>
-              <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
     <div class="page" id="page-statistik">
       <div class="page-header">
         <div class="page-header-left">
@@ -1164,7 +1095,6 @@
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhUphV8wXyUdU929zlxsJDF8U6kdr_Lw2KIzUTEiFnda5_Nxlj0VgQnIBFm2qhDbJo/exec";
 
 let tickets = [];
-let editID = null;
 let busy = false;
 let chartInst = {};
 let toastTmr = null;
@@ -1172,10 +1102,7 @@ let toastTmr = null;
 const tableBody       = document.getElementById("tableBody");
 const searchEl        = document.getElementById("search");
 const fSistemEl       = document.getElementById("fSistem");
-const fStatusFormEl   = document.getElementById("fStatusForm");
 const toastEl         = document.getElementById("toast");
-const submitBtn       = document.getElementById("submitBtn");
-const form            = document.getElementById("ticketForm");
 
 const statusChecks = () => Array.from(document.querySelectorAll(".status-check"));
 
@@ -1280,12 +1207,6 @@ function showPage(name) {
   if (name === "statistik") buildCharts();
 }
 
-function openAddForm() {
-  resetForm();
-  document.getElementById("formTitle").textContent = "Tambah Tiket";
-  document.getElementById("formSubtitle").textContent = "Isi form untuk membuat tiket baru";
-  showPage("tambah");
-}
 
 function toInput(s) {
   if (!s) return "";
@@ -1609,61 +1530,6 @@ async function loadTickets() {
   }
 }
 
-form.addEventListener("submit", async function(e) {
-  e.preventDefault();
-  if (busy) return;
-
-  const data = {
-    Tanggal:      document.getElementById("fTanggal").value,
-    NoTiket:      document.getElementById("fNoTiket").value.trim(),
-    Keluhan:      document.getElementById("fKeluhan").value.trim(),
-    Sistem:       document.getElementById("fSistemForm").value,
-    Penyelesaian: document.getElementById("fPenyelesaian").value.trim(),
-    PIC:          document.getElementById("fPic").value.trim(),
-    Priority:     document.getElementById("fPriority").value,
-    Status:       fStatusFormEl.value,
-  };
-
-  if (!data.Tanggal || !data.NoTiket || !data.Keluhan || !data.PIC) {
-    showToast("Lengkapi field yang wajib diisi!", "error");
-    return;
-  }
-
-  busy = true;
-  submitBtn.disabled = true;
-  const origHTML = submitBtn.innerHTML;
-  submitBtn.innerHTML = `<svg style="animation:spin .7s linear infinite" viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Menyimpan...`;
-
-  try {
-    const payload = editID
-      ? { action: "update", ID: editID, ...data }
-      : { action: "create", ...data };
-
-    const result = await callScript(payload);
-    if (!result.success) throw new Error(result.error || "Gagal simpan");
-
-    showToast(editID ? "Tiket berhasil diupdate!" : "Tiket berhasil disimpan!", editID ? "edit" : "success");
-    resetForm();
-    await loadTickets();
-    showPage("dashboard");
-  } catch (err) {
-    showToast(err.message, "error");
-  } finally {
-    busy = false;
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = origHTML;
-  }
-});
-
-function resetForm() {
-  form.reset();
-  editID = null;
-  document.getElementById("fTanggal").value = getTodayLocal();
-  document.getElementById("fSistemForm").value = "ND6";
-  document.getElementById("fPriority").value = "Low";
-  fStatusFormEl.value = "On Checking";
-  submitBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Simpan Tiket`;
-}
 
 function resetFilters() {
   searchEl.value = "";
@@ -1675,12 +1541,6 @@ function resetFilters() {
   showToast("Filter direset", "info");
 }
 
-function editTicket(i) {
-  const t = tickets[i];
-  if (!t.ID) {
-    showToast("ID tiket kosong!", "error");
-    return;
-  }
 
   editID = t.ID;
   document.getElementById("fTanggal").value      = t.tanggal || "";
