@@ -977,8 +977,8 @@
             <div class="tb-group">
               <div class="tb-label">Urut Tanggal</div>
               <select id="fUrutTanggal">
-                <option value="newest">Terbaru</option>
-                <option value="oldest">Terlama</option>
+                <option value="newest">Urutkan terbaru ke terlama</option>
+                <option value="oldest">Urutkan terlama ke terbaru</option>
               </select>
             </div>
 
@@ -1334,11 +1334,34 @@ function openAddForm() {
 
 function toInput(s) {
   if (!s) return "";
+
   s = String(s).trim();
+
+  // format normal YYYY-MM-DD
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
-  const mm = {jan:"01",feb:"02",mar:"03",apr:"04",may:"05",jun:"06",jul:"07",aug:"08",sep:"09",oct:"10",nov:"11",dec:"12"};
-  const m = s.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/);
-  if (m) return `${m[3]}-${mm[m[2].toLowerCase()] || "01"}-${m[1].padStart(2,"0")}`;
+
+  // format ISO dari Apps Script / Google Sheets
+  if (/^\d{4}-\d{2}-\d{2}T/.test(s)) {
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
+  }
+
+  // format 19-Dec-2025
+  const mm = {
+    jan:"01", feb:"02", mar:"03", apr:"04", may:"05", jun:"06",
+    jul:"07", aug:"08", sep:"09", oct:"10", nov:"11", dec:"12"
+  };
+
+  const m = s.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/i);
+  if (m) {
+    return `${m[3]}-${mm[m[2].toLowerCase()] || "01"}-${m[1].padStart(2,"0")}`;
+  }
+
   return s;
 }
 
@@ -1348,7 +1371,7 @@ function fmtDate(s) {
     const p = d.split("-");
     return `${p[2]}-${p[1]}-${p[0]}`;
   }
-  return s || "-";
+  return "-";
 }
 
 function escapeHtml(value) {
@@ -1451,7 +1474,9 @@ function buildShareReportHtml(filtered) {
   const selectedStatuses = getSelectedStatuses();
   const selectedSystem = fSistemEl.value;
   const searchValue = searchEl.value.trim();
-  const sortDate = fUrutTanggalEl.value === "oldest" ? "Terlama" : "Terbaru";
+  const sortDate = fUrutTanggalEl.value === "oldest"
+  ? "Urutkan terlama ke terbaru"
+  : "Urutkan terbaru ke terlama";
 
   const countChecking = filtered.filter(t => t.status === "On Checking").length;
   const countProcess = filtered.filter(t => t.status === "On Process").length;
@@ -1580,7 +1605,9 @@ async function copyActiveSummary() {
   const selectedStatuses = getSelectedStatuses();
   const selectedSystem = fSistemEl.value || "Semua";
   const searchValue = searchEl.value.trim();
-  const sortDate = fUrutTanggalEl.value === "oldest" ? "Terlama" : "Terbaru";
+  const sortDate = fUrutTanggalEl.value === "oldest"
+  ? "Urutkan terlama ke terbaru"
+  : "Urutkan terbaru ke terlama";
 
   let summary = `Laporan Tiket\n`;
   summary += `Tanggal: ${formatDateTimeNow()}\n`;
