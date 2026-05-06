@@ -1783,7 +1783,7 @@
 
             <div class="tb-group">
               <div class="tb-label" style="opacity:0">x</div>
-              <button class="btn btn-primary btn-sm" onclick="openShareView()">
+              <button class="btn btn-primary btn-sm" onclick="openViewPage()">
                 <svg viewBox="0 0 24 24"><path d="M15 8a3 3 0 1 0-2.83-4H12a3 3 0 0 0 .17 1L7.91 7.13a3 3 0 0 0-1.91-.68 3 3 0 1 0 1.91 5.32l4.26 2.13A3 3 0 0 0 12 15a3 3 0 1 0 3-3c-.67 0-1.29.22-1.79.59l-4.32-2.16A3 3 0 0 0 9 9c0-.32-.05-.62-.14-.91l4.3-2.15A3 3 0 0 0 15 8z"/></svg>
                 Share View
               </button>
@@ -2101,6 +2101,10 @@ window.addEventListener("resize", () => {
   }
 });
 
+function openViewPage() {
+  window.open("view.html", "_blank");
+}
+  
 function showPage(name) {
   document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
   document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
