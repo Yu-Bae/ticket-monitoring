@@ -1827,17 +1827,12 @@ function formatDateTimeNow() {
 
   const savedData = localStorage.getItem("ticketViewData");
 
-  if (savedData) {
-    try {
-      tickets = JSON.parse(savedData).map(norm);
-      render();
-      buildCharts();
-      showToast(`${tickets.length} tiket dimuat`, "info");
-      return;
-    } catch (err) {
-      console.error("Data view rusak:", err);
-      localStorage.removeItem("ticketViewData");
-    }
+  if (savedData && savedData !== "[]") {
+    tickets = JSON.parse(savedData);
+    render();
+    buildCharts();
+    showToast(`${tickets.length} tiket dimuat dari Share View`, "info");
+    return;
   }
 
   loadTickets();
