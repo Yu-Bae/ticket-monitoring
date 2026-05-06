@@ -211,12 +211,9 @@
     }
 
     .main {
-      flex: 1;
-      overflow-x: hidden;
-      padding: 26px 30px;
-      min-width: 0;
-      transition: padding .22s ease;
-    }
+  width: 100%;
+  padding: 20px 24px;
+}
 
     .page {
       display: none;
@@ -1565,53 +1562,22 @@
 <body>
 
 <div class="layout">
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-      <div class="brand-logo">
-        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      </div>
-      <div class="brand-name">Ticket Monitor</div>
-      <div class="brand-sub">ND6 &amp; DMS System</div>
-    </div>
 
-    <nav class="sidebar-nav">
-      <div class="nav-section">Menu Utama</div>
-
-      <div class="nav-item active" id="nav-dashboard" onclick="showPage('dashboard'); closeSidebarMobile();">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-        <span>Dashboard</span>
-      </div>
-
-      <div class="nav-item" id="nav-statistik" onclick="showPage('statistik'); closeSidebarMobile();">
-        <svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-        <span>Statistik</span>
-      </div>
-    </nav>
-
-    <div class="sidebar-bottom">
-      <button class="sync-btn" id="syncBtn" onclick="loadTickets()">
-        <svg viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-        <span>Sync Data</span>
-      </button>
-    </div>
-  </aside>
-
-  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebarMobile()"></div>
 
   <main class="main">
     <div class="page active" id="page-dashboard">
       <div class="page-header">
         <div class="page-header-left">
-          <button class="menu-toggle" onclick="toggleSidebar()" title="Toggle sidebar">
-            <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-          </button>
           <div>
-            <h1>Dashboard View</h1>
-            <p>Monitoring tiket ND6 &amp; DMS secara real-time</p>
+            <h1>Laporan Ticket Monitoring</h1>
+            <p>Realtime Monitoring ND6 & DMS System</p>
           </div>
         </div>
 
         <div class="header-actions">
+          <button class="btn btn-secondary btn-sm" onclick="window.close()">
+  Kembali
+</button>
           <button class="btn btn-ghost btn-sm" onclick="exportCSV()">
             <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             CSV
