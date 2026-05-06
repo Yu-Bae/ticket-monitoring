@@ -2257,22 +2257,45 @@ async function callScript(payload) {
 }
 
 async function loadTickets() {
-  document.getElementById("syncBtn").classList.add("spinning");
-  tableBody.innerHTML = `<tr><td class="loading-td" colspan="9"><div class="spinner"></div>Memuat data dari Google Sheets...</td></tr>`;
+  const syncBtn = document.getElementById("syncBtn");
+
+  if (syncBtn) syncBtn.classList.add("spinning");
+
+  tableBody.innerHTML = `
+    <tr>
+      <td class="loading-td" colspan="9">
+        <div class="spinner"></div>
+        Memuat data dari Google Sheets...
+      </td>
+    </tr>
+  `;
 
   try {
     const json = await callScript({ action: "get" });
-    if (!json.success) throw new Error(json.error || "Gagal ambil data");
+
+    if (!json.success) {
+      throw new Error(json.error || "Gagal ambil data");
+    }
 
     tickets = (json.data || []).map(norm);
     render();
     showToast(`${tickets.length} tiket dimuat`, "info");
+
   } catch (err) {
     console.error(err);
-    tableBody.innerHTML = `<tr><td class="loading-td" colspan="9">⚠ Gagal memuat: ${err.message}</td></tr>`;
+
+    tableBody.innerHTML = `
+      <tr>
+        <td class="loading-td" colspan="9">
+          ⚠ Gagal memuat: ${err.message}
+        </td>
+      </tr>
+    `;
+
     showToast("Gagal memuat: " + err.message, "error");
+
   } finally {
-    document.getElementById("syncBtn").classList.remove("spinning");
+    if (syncBtn) syncBtn.classList.remove("spinning");
   }
 }
 
