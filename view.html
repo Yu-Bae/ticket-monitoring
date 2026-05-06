@@ -1824,14 +1824,29 @@ function formatDateTimeNow() {
 
 (function init() {
 
+  updateStatusButtonLabel();
+
   const savedData = localStorage.getItem("ticketViewData");
 
   if (savedData) {
+
     tickets = JSON.parse(savedData);
+
     render();
     buildCharts();
+
+    showToast(`${tickets.length} tiket dimuat`, "info");
+
   } else {
-    loadTickets();
+
+    tableBody.innerHTML = `
+      <tr>
+        <td class="loading-td" colspan="9">
+          Tidak ada data view
+        </td>
+      </tr>
+    `;
+
   }
 
 })();
