@@ -1828,19 +1828,19 @@ function formatDateTimeNow() {
   const savedData = localStorage.getItem("ticketViewData");
 
   if (savedData) {
-    tickets = JSON.parse(savedData);
-    render();
-    buildCharts();
-    showToast(`${tickets.length} tiket dimuat`, "info");
-  } else {
-    tableBody.innerHTML = `
-      <tr>
-        <td class="loading-td" colspan="9">
-          Tidak ada data view. Silakan buka dari tombol Share View di dashboard utama.
-        </td>
-      </tr>
-    `;
+    try {
+      tickets = JSON.parse(savedData).map(norm);
+      render();
+      buildCharts();
+      showToast(`${tickets.length} tiket dimuat`, "info");
+      return;
+    } catch (err) {
+      console.error("Data view rusak:", err);
+      localStorage.removeItem("ticketViewData");
+    }
   }
+
+  loadTickets();
 })();
 
 const TICONS = {
@@ -2258,6 +2258,26 @@ async function callScript(payload) {
   } catch (err) {
     console.error("Invalid JSON:", text);
     throw new Error("Server response tidak valid");
+  }
+}
+
+async function loadTickets() {
+  document.getElementById("syncBtn").classList.add("spinning");
+  tableBody.innerHTML = `<tr><td class="loading-td" colspan="9"><div class="spinner"></div>Memuat data dari Google Sheets...</td></tr>`;
+
+  try {
+    const json = await callScript({ action: "get" });
+    if (!json.success) throw new Error(json.error || "Gagal ambil data");
+
+    tickets = (json.data || []).map(norm);
+    render();
+    showToast(`${tickets.length} tiket dimuat`, "info");
+  } catch (err) {
+    console.error(err);
+    tableBody.innerHTML = `<tr><td class="loading-td" colspan="9">⚠ Gagal memuat: ${err.message}</td></tr>`;
+    showToast("Gagal memuat: " + err.message, "error");
+  } finally {
+    document.getElementById("syncBtn").classList.remove("spinning");
   }
 }
 
