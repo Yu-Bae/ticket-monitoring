@@ -2101,11 +2101,7 @@ window.addEventListener("resize", () => {
 });
 
 function openViewPage() {
-  const filtered = getFilteredTickets();
-
-  localStorage.setItem("ticketViewData", JSON.stringify(filtered));
-  localStorage.setItem("ticketViewTime", new Date().toISOString());
-
+  localStorage.setItem("ticketViewData", JSON.stringify(tickets));
   window.open("view.html", "_blank");
 }
   
