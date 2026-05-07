@@ -1825,14 +1825,21 @@ function formatDateTimeNow() {
 (function init() {
   updateStatusButtonLabel();
 
-  const savedData = localStorage.getItem("ticketViewData");
+  (function init() {
+  updateStatusButtonLabel();
 
-  if (savedData && savedData !== "[]") {
-    tickets = JSON.parse(savedData);
-    render();
-    buildCharts();
-    showToast(`${tickets.length} tiket dimuat dari Share View`, "info");
-    return;
+  try {
+    const savedData = localStorage.getItem("ticketViewData");
+
+    if (savedData) {
+      tickets = JSON.parse(savedData).map(norm);
+      render();
+      buildCharts();
+      showToast(`${tickets.length} tiket dimuat dari Dashboard`, "info");
+      return;
+    }
+  } catch (err) {
+    console.error("Data localStorage gagal dibaca:", err);
   }
 
   loadTickets();
