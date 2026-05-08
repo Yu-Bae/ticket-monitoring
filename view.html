@@ -23,6 +23,21 @@
       --muted: #6b7a8f;
       --radius: 14px;
       --shadow: 0 2px 12px rgba(13,27,46,0.07);
+      --skeleton: #e2e8f0;
+      --skeleton2: #f8fafc;
+    }
+
+    body.dark-mode {
+      --bg: #0f172a;
+      --card: #111827;
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --border: #1f2937;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --shadow: 0 2px 12px rgba(0,0,0,0.35);
+      --skeleton: #1e293b;
+      --skeleton2: #334155;
     }
 
     body {
@@ -1564,6 +1579,190 @@
         word-break: break-word !important;
       }
     }
+
+    .last-sync {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .pagination-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 0 0;
+      flex-wrap: wrap;
+    }
+
+    .pagination-info {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .pagination-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .pagination-controls button {
+      min-width: 34px;
+      height: 34px;
+      padding: 0 10px;
+      background: #fff;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      font-size: 12px;
+    }
+
+    .pagination-controls button.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .pagination-controls button:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .per-page-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .per-page-wrap select {
+      width: auto;
+      min-width: 82px;
+      padding: 7px 10px;
+      font-size: 12px;
+    }
+
+    .skeleton-row td {
+      padding: 14px 12px;
+    }
+
+    .skeleton {
+      width: 100%;
+      height: 14px;
+      border-radius: 8px;
+      background: linear-gradient(90deg, var(--skeleton) 25%, var(--skeleton2) 50%, var(--skeleton) 75%);
+      background-size: 200% 100%;
+      animation: skeletonMove 1.2s linear infinite;
+    }
+
+    @keyframes skeletonMove {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    body.dark-mode input,
+    body.dark-mode select,
+    body.dark-mode textarea,
+    body.dark-mode .multi-select-btn,
+    body.dark-mode .multi-select-dropdown,
+    body.dark-mode .pagination-controls button {
+      background: #1e293b;
+      color: #f8fafc;
+      border-color: #334155;
+    }
+
+    body.dark-mode input::placeholder {
+      color: #94a3b8;
+    }
+
+    body.dark-mode .card,
+    body.dark-mode .stat-card,
+    body.dark-mode .chart-card,
+    body.dark-mode .modal,
+    body.dark-mode .share-shell,
+    body.dark-mode .share-content,
+    body.dark-mode .share-table-wrap,
+    body.dark-mode .report-meta-card,
+    body.dark-mode .report-stat,
+    body.dark-mode .detail-item,
+    body.dark-mode .detail-block {
+      background: #111827;
+      border-color: #1f2937;
+      color: #f8fafc;
+    }
+
+    body.dark-mode table,
+    body.dark-mode tbody td,
+    body.dark-mode .share-report-table tbody td {
+      background: #111827;
+      color: #f8fafc;
+      border-color: #1f2937;
+    }
+
+    body.dark-mode thead th,
+    body.dark-mode .share-report-table thead th,
+    body.dark-mode .modal-head,
+    body.dark-mode .share-topbar {
+      background: #1e293b;
+      color: #bfdbfe;
+      border-color: #334155;
+    }
+
+    body.dark-mode tbody tr:hover td,
+    body.dark-mode .share-report-table tbody tr:hover td {
+      background: #1e293b;
+    }
+
+    body.dark-mode .btn-ghost,
+    body.dark-mode .btn-secondary,
+    body.dark-mode .modal-close {
+      background: #1e293b;
+      color: #f8fafc;
+      border-color: #334155;
+    }
+
+    body.dark-mode .btn-ghost:hover:not(:disabled),
+    body.dark-mode .btn-secondary:hover:not(:disabled),
+    body.dark-mode .modal-close:hover:not(:disabled),
+    body.dark-mode .pagination-controls button:hover:not(:disabled) {
+      background: #334155;
+      color: #fff;
+    }
+
+    body.dark-mode .pagination-controls button.active {
+      background: #3b82f6;
+      color: #fff;
+      border-color: #3b82f6;
+    }
+
+    body.dark-mode .multi-option:hover {
+      background: #334155;
+    }
+
+    body.dark-mode .share-content {
+      background: #0f172a;
+    }
+
+    @media (max-width: 560px) {
+      .pagination-wrap {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .pagination-controls {
+        justify-content: center;
+      }
+
+      .per-page-wrap {
+        justify-content: center;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -1578,10 +1777,12 @@
           <div>
             <h1>Laporan Ticket Monitoring</h1>
             <p>Realtime Monitoring ND6 & DMS System</p>
+            <div class="last-sync" id="lastSync">Last sync: -</div>
           </div>
         </div>
 
         <div class="header-actions">
+          <button class="btn btn-ghost btn-sm" id="darkModeBtn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
           <button class="btn btn-secondary btn-sm" onclick="window.close()">
   Kembali
 </button>
@@ -1718,6 +1919,22 @@
               </tbody>
             </table>
           </div>
+
+          <div class="pagination-wrap" id="paginationWrap">
+            <div class="pagination-info" id="paginationInfo">Showing 0 of 0 entries</div>
+
+            <div class="pagination-controls" id="paginationControls"></div>
+
+            <div class="per-page-wrap">
+              <span>Show</span>
+              <select id="rowsPerPageSelect">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="all">Semua</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1796,6 +2013,8 @@
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhUphV8wXyUdU929zlxsJDF8U6kdr_Lw2KIzUTEiFnda5_Nxlj0VgQnIBFm2qhDbJo/exec";
 
 let tickets = [];
+let currentPage = 1;
+let rowsPerPage = 10;
 let chartInst = {};
 let toastTmr = null;
 
@@ -1804,6 +2023,9 @@ const searchEl       = document.getElementById("search");
 const fSistemEl      = document.getElementById("fSistem");
 const fUrutTanggalEl = document.getElementById("fUrutTanggal");
 const toastEl        = document.getElementById("toast");
+const rowsPerPageEl  = document.getElementById("rowsPerPageSelect");
+const paginationInfo = document.getElementById("paginationInfo");
+const paginationControls = document.getElementById("paginationControls");
 
 const statusChecks = () => Array.from(document.querySelectorAll(".status-check"));
 
@@ -1822,7 +2044,58 @@ function formatDateTimeNow() {
   return `${date} ${time}`;
 }
 
+
+function toggleDarkMode() {
+  document.body.classList.toggle("dark-mode");
+  const isDark = document.body.classList.contains("dark-mode");
+  localStorage.setItem("viewDarkMode", isDark ? "1" : "0");
+  updateDarkModeButton();
+}
+
+function loadDarkMode() {
+  if (localStorage.getItem("viewDarkMode") === "1") {
+    document.body.classList.add("dark-mode");
+  }
+  updateDarkModeButton();
+}
+
+function updateDarkModeButton() {
+  const btn = document.getElementById("darkModeBtn");
+  if (!btn) return;
+  btn.textContent = document.body.classList.contains("dark-mode") ? "☀️ Light Mode" : "🌙 Dark Mode";
+}
+
+function updateLastSync() {
+  const el = document.getElementById("lastSync");
+  if (!el) return;
+  el.textContent = "Last sync: " + formatDateTimeNow();
+}
+
+function showSkeletonLoading() {
+  tableBody.innerHTML = "";
+  for (let i = 0; i < 10; i++) {
+    tableBody.innerHTML += `
+      <tr class="skeleton-row">
+        <td><div class="skeleton"></div></td>
+        <td><div class="skeleton"></div></td>
+        <td><div class="skeleton"></div></td>
+        <td><div class="skeleton"></div></td>
+        <td><div class="skeleton"></div></td>
+        <td><div class="skeleton"></div></td>
+        <td><div class="skeleton"></div></td>
+        <td><div class="skeleton"></div></td>
+        <td><div class="skeleton"></div></td>
+      </tr>
+    `;
+  }
+}
+
+function resetPagination() {
+  currentPage = 1;
+}
+
 (function init() {
+  loadDarkMode();
   updateStatusButtonLabel();
 
   try {
@@ -1832,6 +2105,7 @@ function formatDateTimeNow() {
       tickets = JSON.parse(savedData).map(norm);
       render();
       buildCharts();
+      updateLastSync();
       showToast(`${tickets.length} tiket dimuat dari Dashboard`, "info");
       return;
     }
@@ -2027,22 +2301,72 @@ function getFilteredTickets() {
   return filtered;
 }
 
+
+function renderPagination(totalItems) {
+  if (!paginationInfo || !paginationControls || !rowsPerPageEl) return;
+
+  const totalPages = rowsPerPage === "all" ? 1 : Math.max(1, Math.ceil(totalItems / rowsPerPage));
+  if (currentPage > totalPages) currentPage = totalPages;
+
+  const start = totalItems === 0 ? 0 : (rowsPerPage === "all" ? 1 : ((currentPage - 1) * rowsPerPage) + 1);
+  const end = rowsPerPage === "all" ? totalItems : Math.min(currentPage * rowsPerPage, totalItems);
+
+  paginationInfo.textContent = `Showing ${start}-${end} of ${totalItems} entries`;
+  paginationControls.innerHTML = "";
+
+  function addButton(label, page, disabled = false, active = false) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = label;
+    btn.disabled = disabled;
+    if (active) btn.classList.add("active");
+    btn.addEventListener("click", () => {
+      if (disabled || active) return;
+      currentPage = page;
+      render();
+    });
+    paginationControls.appendChild(btn);
+  }
+
+  addButton("<<", 1, currentPage === 1 || totalItems === 0);
+  addButton("<", Math.max(1, currentPage - 1), currentPage === 1 || totalItems === 0);
+
+  const maxButtons = 5;
+  let startPage = Math.max(1, currentPage - 2);
+  let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+  startPage = Math.max(1, endPage - maxButtons + 1);
+
+  for (let p = startPage; p <= endPage; p++) {
+    addButton(String(p), p, false, p === currentPage);
+  }
+
+  addButton(">", Math.min(totalPages, currentPage + 1), currentPage === totalPages || totalItems === 0);
+  addButton(">>", totalPages, currentPage === totalPages || totalItems === 0);
+}
+
 function render() {
   const filtered = getFilteredTickets();
+  const totalItems = filtered.length;
 
-  if (!filtered.length) {
+  const paginated = rowsPerPage === "all"
+    ? filtered
+    : filtered.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+
+  if (!paginated.length) {
     tableBody.innerHTML = `<tr><td colspan="9"><div class="empty">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 15h8M9 9h.01M15 9h.01"/></svg>
       <h3>Tidak ada tiket ditemukan</h3>
       <p>Coba ubah filter atau sinkronkan ulang data</p>
     </div></td></tr>`;
   } else {
-    tableBody.innerHTML = filtered.map((t, i) => {
+    const startNo = rowsPerPage === "all" ? 0 : (currentPage - 1) * rowsPerPage;
+
+    tableBody.innerHTML = paginated.map((t, i) => {
       const idx = tickets.indexOf(t);
       const klhn = (t.keluhan || "").length > 55 ? t.keluhan.substring(0, 55) + "…" : t.keluhan || "-";
 
       return `<tr>
-        <td style="color:var(--muted);font-size:12px">${i + 1}</td>
+        <td style="color:var(--muted);font-size:12px">${startNo + i + 1}</td>
         <td class="date-cell">${fmtDate(t.tanggal)}</td>
         <td><span class="notiket-cell">${escapeHtml(t.notiket || "-")}</span></td>
         <td class="keluhan-cell" title="${escapeHtml(t.keluhan || "")}">${escapeHtml(klhn)}</td>
@@ -2061,6 +2385,7 @@ function render() {
     }).join("");
   }
 
+  renderPagination(totalItems);
   updateStats();
 }
 
@@ -2265,14 +2590,7 @@ async function loadTickets() {
 
   if (syncBtn) syncBtn.classList.add("spinning");
 
-  tableBody.innerHTML = `
-    <tr>
-      <td class="loading-td" colspan="9">
-        <div class="spinner"></div>
-        Memuat data dari Google Sheets...
-      </td>
-    </tr>
-  `;
+  showSkeletonLoading();
 
   try {
     const json = await callScript({ action: "get" });
@@ -2282,7 +2600,9 @@ async function loadTickets() {
     }
 
     tickets = (json.data || []).map(norm);
+    resetPagination();
     render();
+    updateLastSync();
     showToast(`${tickets.length} tiket dimuat`, "info");
 
   } catch (err) {
@@ -2307,6 +2627,9 @@ function resetFilters() {
   searchEl.value = "";
   fSistemEl.value = "";
   fUrutTanggalEl.value = "newest";
+  if (rowsPerPageEl) rowsPerPageEl.value = "10";
+  rowsPerPage = 10;
+  resetPagination();
   statusChecks().forEach(ch => ch.checked = false);
   updateStatusButtonLabel();
   closeStatusDropdown();
@@ -2478,13 +2801,22 @@ function exportCSV() {
   showToast("CSV berhasil diunduh!", "success");
 }
 
-searchEl.addEventListener("input", render);
-fSistemEl.addEventListener("change", render);
-fUrutTanggalEl.addEventListener("change", render);
+searchEl.addEventListener("input", () => { resetPagination(); render(); });
+fSistemEl.addEventListener("change", () => { resetPagination(); render(); });
+fUrutTanggalEl.addEventListener("change", () => { resetPagination(); render(); });
+
+if (rowsPerPageEl) {
+  rowsPerPageEl.addEventListener("change", () => {
+    rowsPerPage = rowsPerPageEl.value === "all" ? "all" : Number(rowsPerPageEl.value);
+    resetPagination();
+    render();
+  });
+}
 
 statusChecks().forEach(ch => {
   ch.addEventListener("change", () => {
     updateStatusButtonLabel();
+    resetPagination();
     render();
   });
 });
