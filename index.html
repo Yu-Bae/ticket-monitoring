@@ -61,29 +61,25 @@
       transition: padding .22s ease;
     }
 
-    .company-logo-wrap{
-  width:100%;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  margin-bottom:16px;
-}
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      background: var(--primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      transition: margin .22s ease;
+    }
 
-.company-logo-wrap img{
-  width:140px;
-  max-width:100%;
-  object-fit:contain;
-  background:#fff;
-  padding:10px;
-  border-radius:16px;
-  box-shadow:0 6px 18px rgba(0,0,0,.18);
-  transition:all .25s ease;
-}
-
-.company-logo-wrap img:hover{
-  transform:translateY(-2px);
-  box-shadow:0 10px 24px rgba(0,0,0,.22);
-}
+    .brand-logo svg {
+      width: 20px;
+      height: 20px;
+      stroke: #fff;
+      stroke-width: 2;
+      fill: none;
+    }
 
     .brand-name {
       color: #fff;
@@ -1328,11 +1324,9 @@
       padding-right: 14px;
     }
 
-    body.sidebar-collapsed .company-logo-wrap img{
-  width:52px;
-  padding:6px;
-  border-radius:12px;
-}
+    body.sidebar-collapsed .brand-logo {
+      margin: 0 auto 10px;
+    }
 
     body.sidebar-collapsed .brand-name,
     body.sidebar-collapsed .brand-sub,
@@ -1421,9 +1415,9 @@
         padding-right: 12px;
       }
 
-      body.sidebar-collapsed .company-logo-wrap img{
-  width:140px;
-}
+      body.sidebar-collapsed .brand-logo {
+        margin: 0 0 10px 0;
+      }
 
       .main {
         padding: 16px 12px;
@@ -1717,15 +1711,12 @@
 <div class="layout">
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-
-  <div class="company-logo-wrap">
-    <img src="logo-tsmk-tmja.png" alt="Logo TSMK TMJA">
-  </div>
-
-  <div class="brand-name">Ticket Monitor</div>
-  <div class="brand-sub">ND6 &amp; DMS System</div>
-
-</div>
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      </div>
+      <div class="brand-name">Ticket Monitor</div>
+      <div class="brand-sub">ND6 &amp; DMS System</div>
+    </div>
 
     <nav class="sidebar-nav">
       <div class="nav-section">Menu Utama</div>
