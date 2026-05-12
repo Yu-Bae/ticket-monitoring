@@ -1339,7 +1339,7 @@ function render() {
       const idx = tickets.indexOf(t);
       const klhn = (t.keluhan || "").length > 55 ? t.keluhan.substring(0, 55) + "…" : t.keluhan || "-";
       return `<tr>
-        <td style="color:var(--muted);font-size:12px;font-family:'DM Mono',monospace;">${startNo + i + 1}</td>
+        <td style="color:var(--muted);font-size:12px;font-family:monospace;">${startNo + i + 1}</td>
         <td class="date-cell">${fmtDate(t.tanggal)}</td>
         <td><span class="notiket-cell">${escapeHtml(t.notiket || "-")}</span></td>
         <td class="keluhan-cell" title="${escapeHtml(t.keluhan || "")}">${escapeHtml(klhn)}</td>
