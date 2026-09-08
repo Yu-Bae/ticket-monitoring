@@ -1,0 +1,16 @@
+# Dependencies & Package Managers
+node_modules/
+.npm/
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Environment & Temp
+.env
+.env.local
+*.log

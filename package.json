@@ -1,0 +1,20 @@
+{
+  "name": "ticket-monitoring-system",
+  "version": "2.0.0",
+  "description": "Enterprise Ticket Monitoring System for ND6 and DMS built with modular CSS, ES6 Javascript, and Google Apps Script Backend",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8080",
+    "dev": "python -m http.server 8080"
+  },
+  "keywords": [
+    "ticket-monitoring",
+    "dashboard",
+    "google-apps-script",
+    "chartjs",
+    "nd6",
+    "dms"
+  ],
+  "author": "TSMK & TMJA Dev Team",
+  "license": "MIT"
+}

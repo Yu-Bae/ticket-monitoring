@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ticket Monitoring — Public View</title>
+  <link rel="icon" type="image/png" href="./assets/img/logo-tsm.png">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Modular Stylesheets -->
+  <link rel="stylesheet" href="./assets/css/main.css">
+  
+  <!-- External Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <style>
+    .main {
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+
+<div class="main">
+  <div class="page active" id="page-dashboard">
+    <div class="page-header">
+      <div class="page-header-left">
+        <div class="header-info">
+          <h1>Laporan Ticket Monitoring</h1>
+          <div class="header-sub-row">
+            <p>Real-time Monitoring System ND6 &amp; DMS</p>
+            <div class="last-sync" id="lastSync">
+              <span class="last-sync-dot"></span>
+              <span id="lastSyncText">Last sync: -</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn btn-ghost btn-sm" id="darkModeBtn" onclick="toggleDarkMode()" aria-label="Toggle Dark Mode">🌙 Dark Mode</button>
+        <button class="btn btn-secondary btn-sm" onclick="window.close()" aria-label="Tutup Halaman View">
+          <svg viewBox="0 0 24 24"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+          Tutup View
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="exportCSV()" aria-label="Ekspor data ke CSV">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          CSV
+        </button>
+        <button class="btn btn-success btn-sm" onclick="exportExcel()" aria-label="Ekspor data ke Excel">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Excel
+        </button>
+      </div>
+    </div>
+
+    <!-- KPI CARDS GRID -->
+    <div class="stats-grid">
+      <div class="stat-card blue">
+        <div class="stat-header">
+          <div class="stat-label">Total Tiket</div>
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </div>
+        </div>
+        <div class="stat-val" id="sTotal">0</div>
+        <div class="stat-bar-track"><div class="stat-bar-fill" id="bTotal" style="width: 100%"></div></div>
+      </div>
+
+      <div class="stat-card sky">
+        <div class="stat-header">
+          <div class="stat-label">On Checking</div>
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+        </div>
+        <div class="stat-val" id="sChecking">0</div>
+        <div class="stat-bar-track"><div class="stat-bar-fill" id="bChecking" style="width: 0%"></div></div>
+      </div>
+
+      <div class="stat-card amber">
+        <div class="stat-header">
+          <div class="stat-label">On Process</div>
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+        </div>
+        <div class="stat-val" id="sProcess">0</div>
+        <div class="stat-bar-track"><div class="stat-bar-fill" id="bProcess" style="width: 0%"></div></div>
+      </div>
+
+      <div class="stat-card gray">
+        <div class="stat-header">
+          <div class="stat-label">Hold</div>
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M10 9v6M14 9v6"/></svg>
+          </div>
+        </div>
+        <div class="stat-val" id="sHold">0</div>
+        <div class="stat-bar-track"><div class="stat-bar-fill" id="bHold" style="width: 0%"></div></div>
+      </div>
+
+      <div class="stat-card green">
+        <div class="stat-header">
+          <div class="stat-label">DONE</div>
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+        </div>
+        <div class="stat-val" id="sDone">0</div>
+        <div class="stat-bar-track"><div class="stat-bar-fill" id="bDone" style="width: 0%"></div></div>
+      </div>
+    </div>
+
+    <!-- DATA TABLE CARD -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Daftar Tiket (Public View)</span>
+      </div>
+
+      <div class="card-body">
+        <!-- TOOLBAR & FILTERS -->
+        <div class="toolbar">
+          <div class="tb-group search-block">
+            <div class="tb-label">Cari</div>
+            <div class="search-wrap">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+              <input type="text" id="search" placeholder="Cari No Tiket, Keluhan, atau PIC...">
+            </div>
+          </div>
+
+          <div class="tb-group">
+            <div class="tb-label">Sistem</div>
+            <select id="fSistem">
+              <option value="">Semua Sistem</option>
+              <option>ND6</option>
+              <option>DMS</option>
+            </select>
+          </div>
+
+          <div class="tb-group">
+            <div class="tb-label">Status</div>
+            <div class="multi-select" id="statusMulti">
+              <button type="button" class="multi-select-btn" id="statusBtn" onclick="toggleStatusDropdown()">
+                <span id="statusBtnLabel">Semua Status</span>
+                <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="multi-select-dropdown" id="statusDropdown">
+                <label class="multi-option">
+                  <input type="checkbox" value="On Checking" class="status-check">
+                  <span>On Checking</span>
+                </label>
+                <label class="multi-option">
+                  <input type="checkbox" value="On Process" class="status-check">
+                  <span>On Process</span>
+                </label>
+                <label class="multi-option">
+                  <input type="checkbox" value="Hold" class="status-check">
+                  <span>Hold</span>
+                </label>
+                <label class="multi-option">
+                  <input type="checkbox" value="DONE" class="status-check">
+                  <span>DONE</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="tb-group">
+            <div class="tb-label">Urut Tanggal</div>
+            <select id="fUrutTanggal">
+              <option value="newest">Terbaru ke Terlama</option>
+              <option value="oldest">Terlama ke Terbaru</option>
+            </select>
+          </div>
+
+          <div class="tb-group">
+            <div class="tb-label" style="opacity:0">Actions</div>
+            <button class="btn btn-secondary btn-sm" onclick="resetFilters()">Reset</button>
+          </div>
+
+          <div class="tb-group">
+            <div class="tb-label" style="opacity:0">Actions</div>
+            <button class="btn btn-ghost btn-sm" onclick="copyActiveSummary()">
+              <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy
+            </button>
+          </div>
+
+          <div class="tb-group">
+            <div class="tb-label" style="opacity:0">Actions</div>
+            <button class="btn btn-primary btn-sm" onclick="openShareView()">
+              <svg viewBox="0 0 24 24"><path d="M15 8a3 3 0 1 0-2.83-4H12a3 3 0 0 0 .17 1L7.91 7.13a3 3 0 0 0-1.91-.68 3 3 0 1 0 1.91 5.32l4.26 2.13A3 3 0 0 0 12 15a3 3 0 1 0 3-3c-.67 0-1.29.22-1.79.59l-4.32-2.16A3 3 0 0 0 9 9c0-.32-.05-.62-.14-.91l4.3-2.15A3 3 0 0 0 15 8z"/></svg>
+              Share
+            </button>
+          </div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:40px">#</th>
+                <th style="width:100px">Tanggal</th>
+                <th style="width:130px">No Tiket</th>
+                <th>Keluhan</th>
+                <th style="width:90px">Sistem</th>
+                <th style="width:120px">PIC</th>
+                <th style="width:100px">Priority</th>
+                <th style="width:120px">Status</th>
+                <th style="width:60px">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <tr><td class="loading-td" colspan="9"><div class="spinner"></div>Memuat data tiket...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="pagination-bar">
+          <div class="pagination-left">
+            <label for="rowsPerPage" class="tb-label" style="margin:0;">Tampilkan</label>
+            <select id="rowsPerPage" class="pagination-select">
+              <option value="10" selected>10 Data</option>
+              <option value="20">20 Data</option>
+              <option value="50">50 Data</option>
+              <option value="all">Semua / All</option>
+            </select>
+            <span class="pagination-info" id="paginationInfo">Menampilkan 0 data</span>
+          </div>
+
+          <div class="pagination-right">
+            <button type="button" class="page-btn" id="firstPageBtn">«</button>
+            <button type="button" class="page-btn" id="prevPageBtn">‹</button>
+            <div class="page-jump-wrap" id="pageButtons">
+              <span class="page-number" id="pageNumber">1</span>
+            </div>
+            <button type="button" class="page-btn" id="nextPageBtn">›</button>
+            <button type="button" class="page-btn" id="lastPageBtn">»</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- APP FOOTER -->
+    <footer class="app-footer">
+      <div class="footer-content">
+        <div class="footer-left">
+          <span class="footer-brand">Ticket Monitoring System v2.1</span>
+          <span class="footer-dot">•</span>
+          <span class="footer-sub">Public Report Viewer</span>
+        </div>
+        <div class="footer-right">
+          <span>© 2026 <strong>TSMK &amp; TMJA Monitoring</strong>. All Rights Reserved.</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Detail Tiket</div>
+      <button class="btn modal-close" onclick="closeModal()">✕ Tutup</button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-grid">
+        <div class="detail-item"><small>No Tiket</small><strong id="dNoTiket">-</strong></div>
+        <div class="detail-item"><small>Tanggal Input</small><strong id="dTanggal">-</strong></div>
+        <div class="detail-item"><small>Sistem</small><div id="dSistem"></div></div>
+        <div class="detail-item"><small>PIC</small><strong id="dPic">-</strong></div>
+        <div class="detail-item"><small>Priority</small><div id="dPriority"></div></div>
+        <div class="detail-item"><small>Status Tiket</small><div id="dStatus"></div></div>
+      </div>
+      <div class="detail-block"><h4>Keluhan / Penjelasan</h4><p id="dKeluhan">-</p></div>
+      <div class="detail-block"><h4>Penanganan / Langkah Penyelesaian</h4><p id="dPenyelesaian">-</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE / PRINT REPORT OVERLAY -->
+<div class="share-overlay" id="shareOverlay">
+  <div class="share-shell">
+    <div class="share-topbar">
+      <div class="share-topbar-left">
+        <h2>Laporan Preview Tiket</h2>
+        <p>Ringkasan tiket terfilter yang dapat dicopy, dibagikan, atau dicetak langsung.</p>
+      </div>
+      <div class="share-topbar-actions">
+        <button class="btn btn-primary btn-sm" onclick="copyWhatsAppFormat()">
+          📱 Copy Format WA
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="copyActiveSummary()">
+          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy Summary
+        </button>
+        <button class="btn btn-success btn-sm" onclick="printShareView()">
+          <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Cetak / PDF
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="closeShareView()">✕ Tutup</button>
+      </div>
+    </div>
+    <div class="share-content" id="shareContent"></div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast"></div>
+
+<!-- ES6 Module Script -->
+<script type="module" src="./assets/js/app.js"></script>
+</body>
+</html>
